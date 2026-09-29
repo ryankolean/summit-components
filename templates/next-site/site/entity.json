@@ -1,0 +1,33 @@
+{
+  "name": "Northbound Diner",
+  "type": "Restaurant",
+  "description": "Scratch-made breakfast and lunch in Ferndale, Michigan. This is sample content for the Summit site template.",
+  "url": "https://example.com/",
+  "telephone": "+1-248-555-0100",
+  "locations": [
+    {
+      "address": {
+        "street": "100 Example Ave",
+        "locality": "Ferndale",
+        "region": "MI",
+        "postalCode": "48220"
+      },
+      "geo": { "lat": 42.4606, "lng": -83.1346 },
+      "hours": [
+        { "days": ["Mo", "Tu", "We", "Th", "Fr"], "opens": "07:00", "closes": "15:00" },
+        { "days": ["Sa", "Su"], "opens": "08:00", "closes": "14:00" }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "question": "Do you take reservations?",
+      "answer": "No, seating is first come, first served. Parties of eight or more can call ahead."
+    },
+    {
+      "question": "Is there parking?",
+      "answer": "Free street parking on Example Ave and a public lot one block east."
+    }
+  ],
+  "sameAs": ["https://www.instagram.com/example"]
+}

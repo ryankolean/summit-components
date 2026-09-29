@@ -1,0 +1,22 @@
+{
+  "name": "summit-astro-site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/react": "^7.0.0",
+    "@astrojs/sitemap": "^3.7.4",
+    "@summit/hero": "workspace:^",
+    "@summit/schemas": "workspace:^",
+    "@summit/seo": "workspace:^",
+    "@summit/tokens": "workspace:^",
+    "astro": "^7.3.5",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  }
+}

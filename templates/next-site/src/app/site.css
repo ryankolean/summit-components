@@ -1,0 +1,87 @@
+/* Page-level styles for the template. Components bring their own CSS. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--summit-color-bg, #ffffff);
+  color: var(--summit-color-fg, #111111);
+  font-family: var(--summit-font-body, system-ui, sans-serif);
+  line-height: 1.55;
+}
+
+a {
+  color: var(--summit-color-primary, #111111);
+  text-underline-offset: 0.2em;
+}
+
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--summit-color-accent, #0066cc);
+  outline-offset: 3px;
+}
+
+.site-section {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 5vw, 4rem);
+  border-top: 1px solid color-mix(in srgb, var(--summit-color-fg, #111111) 15%, transparent);
+}
+
+.site-section h2 {
+  margin: 0 0 1.25rem;
+  font-family: var(--summit-font-display, Georgia, serif);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 400;
+}
+
+.site-hours {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+}
+
+.site-hours div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dotted color-mix(in srgb, var(--summit-color-fg, #111111) 25%, transparent);
+}
+
+.site-hours dt {
+  font-weight: 600;
+}
+
+.site-hours dd {
+  margin: 0;
+}
+
+details {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--summit-color-fg, #111111) 15%, transparent);
+}
+
+summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+details p {
+  margin: 0.5rem 0 0;
+  color: var(--summit-color-muted, #555555);
+}
+
+.site-footer {
+  padding: 2rem clamp(1rem, 5vw, 4rem);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--summit-color-muted, #555555);
+}

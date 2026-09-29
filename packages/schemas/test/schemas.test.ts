@@ -55,6 +55,15 @@ describe("BrandSchema", () => {
     expect(BrandSchema.safeParse(bad).success).toBe(false);
   });
 
+  it("rejects font and radius values that could break out of a style tag", () => {
+    const family = { ...brand, fonts: { ...brand.fonts, display: { family: "X</style><script>" } } };
+    const fallback = { ...brand, fonts: { ...brand.fonts, body: { family: "Jost", fallback: "a;}body{x" } } };
+    expect(BrandSchema.safeParse(family).success).toBe(false);
+    expect(BrandSchema.safeParse(fallback).success).toBe(false);
+    expect(BrandSchema.safeParse({ ...brand, radius: "4px;}" }).success).toBe(false);
+    expect(BrandSchema.safeParse({ ...brand, radius: "0.5rem" }).success).toBe(true);
+  });
+
   it("requires every core color role", () => {
     const { accent: _accent, ...colors } = brand.colors;
     expect(BrandSchema.safeParse({ ...brand, colors }).success).toBe(false);
