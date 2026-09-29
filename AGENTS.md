@@ -27,8 +27,10 @@ Instructions for any agent working in this repo. Read README.md first.
 ## Verify before opening a PR
 
 ```bash
-pnpm typecheck && pnpm test && pnpm build && pnpm registry:check && pnpm example && git diff --exit-code -- packages/hero/example
+pnpm typecheck && pnpm test && pnpm build && pnpm registry:check && pnpm example && git diff --exit-code -- packages/hero/example && pnpm templates:verify
 ```
+
+Never create or push release tags by hand; the `release` workflow owns them.
 
 For a visual change, serve `packages/hero` (launch config
 `summit-components-hero`, port 8773), open `/example/`, and check 375, 768 and
