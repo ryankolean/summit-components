@@ -1,0 +1,22 @@
+{
+  "name": "@summit/seo",
+  "version": "0.1.0",
+  "description": "JSON-LD, llms.txt and robots.txt generated from entity.json, the single source of public facts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@summit/schemas": "github:ryankolean/summit-components#schemas-v0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  }
+}
