@@ -1,0 +1,52 @@
+{
+  "name": "@summit/hero",
+  "version": "0.1.0",
+  "description": "Page hero: React component, HTML renderer and a no-build custom element with identical markup",
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./html": {
+      "source": "./src/html.ts",
+      "types": "./dist/html.d.ts",
+      "import": "./dist/html.js"
+    },
+    "./embed": {
+      "source": "./src/embed.ts",
+      "types": "./dist/embed.d.ts",
+      "import": "./dist/embed.js"
+    },
+    "./hero.css": "./src/hero.css"
+  },
+  "files": [
+    "dist",
+    "src/hero.css"
+  ],
+  "sideEffects": [
+    "./dist/embed.js",
+    "./src/embed.ts",
+    "*.css"
+  ],
+  "dependencies": {
+    "zod": "^4.1.5",
+    "@summit/schemas": "github:ryankolean/summit-components#schemas-v0.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@summit/tokens": "^0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "example": "node example/build.mjs"
+  }
+}
