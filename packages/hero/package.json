@@ -19,6 +19,11 @@
       "types": "./dist/embed.d.ts",
       "import": "./dist/embed.js"
     },
+    "./config": {
+      "source": "./src/config.ts",
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js"
+    },
     "./hero.css": "./src/hero.css"
   },
   "files": ["dist", "src/hero.css"],

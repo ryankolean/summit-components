@@ -61,7 +61,7 @@ importers:
         version: 7.1.0
 
   packages/cli:
-    dependencies:
+    devDependencies:
       '@summit/checks':
         specifier: workspace:^
         version: link:../checks
@@ -77,6 +77,9 @@ importers:
       '@summit/tokens':
         specifier: workspace:^
         version: link:../tokens
+      esbuild:
+        specifier: ^0.28.2
+        version: 0.28.2
       node-html-parser:
         specifier: ^7.0.1
         version: 7.1.0

@@ -4,7 +4,7 @@
   "description": "The summit command: intake, client repo bootstrap, preview pages and site checks",
   "type": "module",
   "bin": {
-    "summit": "./dist/cli.js"
+    "summit": "./dist/summit.js"
   },
   "exports": {
     ".": {
@@ -15,14 +15,15 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json && node build.mjs"
   },
-  "dependencies": {
+  "devDependencies": {
     "@summit/checks": "workspace:^",
     "@summit/hero": "workspace:^",
     "@summit/schemas": "workspace:^",
     "@summit/seo": "workspace:^",
     "@summit/tokens": "workspace:^",
+    "esbuild": "^0.28.2",
     "node-html-parser": "^7.0.1"
   }
 }

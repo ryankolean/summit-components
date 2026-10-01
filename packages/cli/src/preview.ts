@@ -1,7 +1,8 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join } from "node:path";
-import { HeroConfigSchema } from "@summit/hero";
+import { fileURLToPath } from "node:url";
+import { HeroConfigSchema } from "@summit/hero/config";
 import { renderHero } from "@summit/hero/html";
 import { BrandSchema, EntitySchema } from "@summit/schemas";
 import { entityJsonLd, faqJsonLd, formatHours, llmsTxt, robotsTxt, serializeJsonLd } from "@summit/seo";
@@ -27,8 +28,11 @@ export function renderPreview(repo: string, out: string): void {
   );
 
   mkdirSync(out, { recursive: true });
-  const require = createRequire(import.meta.url);
-  copyFileSync(require.resolve("@summit/hero/hero.css"), join(out, "hero.css"));
+  // The published CLI is a single bundle with hero.css copied beside it; in the
+  // workspace the stylesheet resolves from the package.
+  const bundled = fileURLToPath(new URL("./hero.css", import.meta.url));
+  const heroCss = existsSync(bundled) ? bundled : createRequire(import.meta.url).resolve("@summit/hero/hero.css");
+  copyFileSync(heroCss, join(out, "hero.css"));
 
   const jsonLd = [entityJsonLd(entity), faqJsonLd(entity)].filter(Boolean);
   const facts = [
