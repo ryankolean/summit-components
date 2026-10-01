@@ -4,10 +4,10 @@ Instructions for any agent working in this repo. Read README.md first.
 
 ## Rules
 
-- **Proprietary and private.** Never make this repo public, and never copy its
-  source (packages, templates, scripts) into a public repo, gist, issue or
-  artifact. Templates go only into private client repos. Public client sites
-  receive built output only.
+- **This repo is public.** Never commit client data: no private intake,
+  pricing, contacts, credentials or unreleased client copy. Templates and
+  examples use sample content on `example.com` only. Client audit results
+  belong in Jira or the client's repo, not here.
 - **Branch and PR.** Never commit to `main` directly. Branch `jira/<KEY>` or
   `feat/<topic>`, open a PR, and leave merging to Ryan.
 - **Conventional commits**, imperative and lowercase: `feat: add gallery component (SUMMIT-248)`.
