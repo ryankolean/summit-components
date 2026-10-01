@@ -1,0 +1,25 @@
+{
+  "name": "@summit/checks",
+  "version": "0.1.0",
+  "description": "Stack-agnostic site checks that run against built HTML: audit, gate, and later monitor",
+  "type": "module",
+  "bin": {
+    "summit-checks": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "node-html-parser": "^7.0.1"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  }
+}
