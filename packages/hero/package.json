@@ -1,6 +1,6 @@
 {
   "name": "@summit/hero",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Page hero: React component, HTML renderer and a no-build custom element with identical markup",
   "type": "module",
   "exports": {
@@ -26,8 +26,15 @@
     },
     "./hero.css": "./src/hero.css"
   },
-  "files": ["dist", "src/hero.css"],
-  "sideEffects": ["./dist/embed.js", "./src/embed.ts", "*.css"],
+  "files": [
+    "dist",
+    "src/hero.css"
+  ],
+  "sideEffects": [
+    "./dist/embed.js",
+    "./src/embed.ts",
+    "*.css"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "example": "node example/build.mjs"
