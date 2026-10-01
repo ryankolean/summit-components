@@ -1,0 +1,47 @@
+---
+import "@summit/hero/hero.css";
+import "../styles/site.css";
+import { entityJsonLd, faqJsonLd, serializeJsonLd } from "@summit/seo";
+import { toCssVariables } from "@summit/tokens";
+import { brand, entity, mode } from "../lib/site";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = entity.description } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(`${base}og.png`, Astro.site).href;
+const jsonLd = [entityJsonLd(entity), faqJsonLd(entity)].filter(Boolean);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {mode === "preview" && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <style is:inline set:html={toCssVariables(brand)}></style>
+    {jsonLd.map((data) => <script type="application/ld+json" is:inline set:html={serializeJsonLd(data)} />)}
+  </head>
+  <body>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>{entity.name}. {entity.locations[0]?.address.street}, {entity.locations[0]?.address.locality}.</p>
+    </footer>
+  </body>
+</html>

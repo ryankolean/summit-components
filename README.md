@@ -14,6 +14,9 @@ Nothing here assumes one stack or requires a site to come from a template.
 | `@summit/tokens` | `brand.json` to CSS custom properties and a Tailwind preset, with a WCAG contrast guard. CLI: `summit-tokens` |
 | `@summit/hero` | The first component. One package, three renderings with identical markup: React (`@summit/hero`), HTML string (`@summit/hero/html`), custom element (`@summit/hero/embed`), plus `hero.css` |
 | `@summit/checks` | Checks that run against built HTML, so they work on any stack. CLI: `summit-checks audit|gate <dir>` |
+| `@summit/seo` | JSON-LD, FAQPage, `llms.txt` and `robots.txt` generated from `entity.json` |
+
+Site templates live in `templates/` (Astro and Next). See [docs/TEMPLATES.md](docs/TEMPLATES.md).
 
 `registry.json` lists the components a site can pick, which stacks each one
 supports, and its entrypoints. `pnpm registry:check` validates it against the
@@ -40,6 +43,7 @@ pnpm typecheck
 pnpm build            # tsc per package, in dependency order
 pnpm registry:check   # after build
 pnpm example          # regenerate packages/hero/example (CI fails on drift)
+pnpm templates:verify # build both templates in both modes, gate them, check hero parity
 pnpm changeset        # describe a change to one or more packages
 pnpm version-packages # apply changesets and sync registry.json
 ```
@@ -59,11 +63,31 @@ node packages/checks/dist/cli.js audit ../umbo            # a repo root publishe
 - [Adding a stack](docs/ADDING_A_STACK.md)
 - [Adding a check](docs/ADDING_A_CHECK.md)
 
+## Distribution: git tags
+
+There is no registry. On every merge to `main`, the `release` workflow tags each
+package version that has no tag yet, as `<name>-v<version>` (`hero-v0.1.0`).
+Each tag is a standalone commit holding just that package, built, at its root,
+with its `@summit/*` dependencies pointing at their own tags. Sites install:
+
+```json
+"@summit/hero": "github:ryankolean/summit-components#hero-v0.1.0"
+```
+
+`node scripts/use-tags.mjs <site-dir>` rewrites a site's `@summit/*`
+dependencies to the current tags. To release, run `pnpm version-packages` in a
+PR; merging it tags the new versions.
+
+## Developed in the open
+
+This repo is public (decided 2026-10-01), so any site, public or private,
+installs from release tags with no token or deploy key. Static and no-build
+sites paste HTML and CSS and install nothing.
+
+Being public changes what may be committed here. Client data never goes in
+this repo: no private intake, pricing, contacts or credentials, and only
+sample content (`example.com`) in the templates.
+
 ## Open decisions
 
-- **Where packages publish.** Not wired yet. GitHub Packages requires the npm
-  scope to match the owner (`@ryankolean/...`), so keeping `@summit/*` means
-  either a `summit` GitHub or npm organization, or installing from git tags.
-  Until then, sites consume packages from this workspace.
-- **Site templates** (`astro-site-template`, `next-site-template`) and `monitor`
-  mode for the checks are the next SUMMIT-244 PR.
+- **`monitor` mode** for the checks is part of SUMMIT-252.

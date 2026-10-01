@@ -22,3 +22,5 @@ jobs:
       - run: pnpm registry:check
       - name: Hero example is up to date
         run: pnpm example && git diff --exit-code -- packages/hero/example
+      - name: Templates build, pass the gate and match renderHero
+        run: pnpm templates:verify

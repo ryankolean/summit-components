@@ -1,0 +1,16 @@
+{
+  "name": "Northbound Diner",
+  "colors": {
+    "bg": "#F4EFE6",
+    "fg": "#211A14",
+    "muted": "#5A4E43",
+    "primary": "#7A2E1F",
+    "onPrimary": "#FFFFFF",
+    "accent": "#C9A24B"
+  },
+  "fonts": {
+    "display": { "family": "Georgia", "fallback": "\"Times New Roman\", serif" },
+    "body": { "family": "system-ui", "fallback": "-apple-system, \"Segoe UI\", sans-serif" }
+  },
+  "radius": "6px"
+}

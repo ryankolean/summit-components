@@ -1,0 +1,11 @@
+{
+  "title": "Northbound Diner | Breakfast and lunch in Ferndale",
+  "hero": {
+    "eyebrow": "Ferndale, Michigan",
+    "title": "Breakfast worth getting up for",
+    "lede": "Scratch cooking, strong coffee and a menu that changes with what is good this week.",
+    "primaryCta": { "label": "Hours and location", "href": "#visit" },
+    "secondaryCta": { "label": "Questions", "href": "#faq" },
+    "image": { "src": "hero.svg", "alt": "Illustrated sun over rolling hills", "width": 1200, "height": 900 }
+  }
+}
