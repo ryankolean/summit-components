@@ -1,0 +1,11 @@
+:root {
+  --summit-color-bg: #F4EFE6;
+  --summit-color-fg: #211A14;
+  --summit-color-muted: #5A4E43;
+  --summit-color-primary: #7A2E1F;
+  --summit-color-on-primary: #FFFFFF;
+  --summit-color-accent: #C9A24B;
+  --summit-font-display: "Fraunces", Georgia, serif;
+  --summit-font-body: "Jost", system-ui, sans-serif;
+  --summit-radius: 6px;
+}
