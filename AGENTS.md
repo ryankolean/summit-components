@@ -4,6 +4,10 @@ Instructions for any agent working in this repo. Read README.md first.
 
 ## Rules
 
+- **Proprietary and private.** Never make this repo public, and never copy its
+  source (packages, templates, scripts) into a public repo, gist, issue or
+  artifact. Templates go only into private client repos. Public client sites
+  receive built output only.
 - **Branch and PR.** Never commit to `main` directly. Branch `jira/<KEY>` or
   `feat/<topic>`, open a PR, and leave merging to Ryan.
 - **Conventional commits**, imperative and lowercase: `feat: add gallery component (SUMMIT-248)`.
@@ -19,8 +23,9 @@ Instructions for any agent working in this repo. Read README.md first.
   files, so they load in a plain page with no bundler. Schemas (zod) stay in the
   main entrypoint.
 - **`EntitySchema` holds public facts only.** It is committed to client site
-  repos, several of which are public and publish their repo root. Private
-  intake (pain points, competitors, pricing, contacts) never goes in a site repo.
+  repos, and older client repos are public and publish their repo root.
+  Private intake (pain points, competitors, pricing, contacts) never goes in a
+  site repo.
 - **Checks read built HTML, never source.** A check that needs to know the
   stack is in the wrong place.
 

@@ -78,13 +78,31 @@ with its `@summit/*` dependencies pointing at their own tags. Sites install:
 dependencies to the current tags. To release, run `pnpm version-packages` in a
 PR; merging it tags the new versions.
 
-This repo is private, so installing needs GitHub access: an SSH key locally,
-and a token or deploy key in a client site's CI. Static and no-build sites are
-unaffected; they paste HTML and CSS and install nothing.
+## Private and proprietary
+
+This repo is Summit's proprietary work and stays private (decided 2026-10-01).
+Its source never goes into a public repo. Client sites get a copy of a
+template at launch, in a **private** client repo; public sites only ever
+receive built output, which the live site serves anyway.
+
+Installing from tags therefore needs read access to this repo:
+
+- **Locally:** your GitHub SSH key.
+- **In a client repo's CI:** a fine-grained token with read-only `Contents`
+  access to `ryankolean/summit-components` only, kept in 1Password (Summit
+  vault) and set as the client repo secret `SUMMIT_COMPONENTS_TOKEN`
+  (`op read ... | gh secret set`, never through the clipboard). Before
+  `pnpm install`, the workflow rewrites GitHub URLs to use it:
+
+  ```bash
+  git config --global url."https://x-access-token:${SUMMIT_COMPONENTS_TOKEN}@github.com/ryankolean/summit-components".insteadOf "https://github.com/ryankolean/summit-components"
+  git config --global url."https://x-access-token:${SUMMIT_COMPONENTS_TOKEN}@github.com/ryankolean/summit-components".insteadOf "ssh://git@github.com/ryankolean/summit-components"
+  ```
+
+  This is untested until the first client launch; verify it there.
+
+Static and no-build sites paste HTML and CSS and install nothing.
 
 ## Open decisions
 
-- **Private repo access from client CI.** Framework-stack client sites will need
-  a deploy key or token to install from tags, or this repo made public (it
-  holds no client data).
 - **`monitor` mode** for the checks is part of SUMMIT-252.

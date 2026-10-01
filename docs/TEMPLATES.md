@@ -34,8 +34,10 @@ See [STACK_DECISION.md](STACK_DECISION.md) for the rule.
 
 Until `summit new` exists (SUMMIT-245):
 
-1. Copy the template directory into the new client repo.
-2. Point the `@summit/*` dependencies at release tags:
+1. Create the client repo as **private**, then copy the template directory into
+   it. Template source is proprietary and never goes into a public repo.
+2. Point the `@summit/*` dependencies at release tags, and give the client
+   repo's CI read access (see "Private and proprietary" in the README):
    ```bash
    node ~/code/summit-components/scripts/use-tags.mjs <client-repo>
    ```
