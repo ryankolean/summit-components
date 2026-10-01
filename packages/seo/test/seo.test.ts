@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EntitySchema } from "@summit/schemas";
-import { entityJsonLd, faqJsonLd, llmsTxt, robotsTxt, serializeJsonLd } from "@summit/seo";
+import { entityJsonLd, faqJsonLd, formatHours, llmsTxt, robotsTxt, serializeJsonLd } from "@summit/seo";
 
 const entity = EntitySchema.parse({
   name: "Demo Diner",
@@ -90,6 +90,20 @@ describe("llmsTxt", () => {
   it("lists pages and the FAQ", () => {
     expect(txt).toContain("- [Menu](https://demo.example/menu): Full menu");
     expect(txt).toContain("### Do you take reservations?\n\nWalk-in only.");
+  });
+});
+
+describe("formatHours", () => {
+  it("collapses a run that wraps past Sunday (Umbo is open Thursday to Monday)", () => {
+    expect(formatHours([{ days: ["Th", "Fr", "Sa", "Su", "Mo"], opens: "16:30", closes: "21:30" }])).toBe("Th-Mo 16:30-21:30");
+  });
+
+  it("lists days that are not a run", () => {
+    expect(formatHours([{ days: ["Mo", "We", "Fr"], opens: "09:00", closes: "17:00" }])).toBe("Mo,We,Fr 09:00-17:00");
+  });
+
+  it("names all seven days as a full week", () => {
+    expect(formatHours([{ days: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"], opens: "07:00", closes: "15:00" }])).toBe("Mo-Su 07:00-15:00");
   });
 });
 

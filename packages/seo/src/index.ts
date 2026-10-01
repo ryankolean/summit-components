@@ -90,11 +90,19 @@ export function serializeJsonLd(data: unknown): string {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+/**
+ * "Mo-Fr", or "Th-Mo" for a run that wraps past Sunday, or "Mo,We,Fr". The week
+ * is treated as a circle: a run starts after the single gap in the day set.
+ */
 function dayRange(days: Hours["days"]): string {
-  const idx = days.map((d) => DAY_ORDER.indexOf(d)).sort((a, b) => a - b);
-  const contiguous = idx.every((v, i) => i === 0 || v === idx[i - 1]! + 1);
-  if (contiguous && idx.length > 2) return `${DAY_ORDER[idx[0]!]}-${DAY_ORDER[idx[idx.length - 1]!]}`;
-  if (contiguous && idx.length === 2) return `${DAY_ORDER[idx[0]!]}-${DAY_ORDER[idx[1]!]}`;
+  const idx = [...new Set(days.map((d) => DAY_ORDER.indexOf(d)))].sort((a, b) => a - b);
+  if (idx.length === 7) return "Mo-Su";
+  const gaps = idx.filter((v, i) => idx[(i + 1) % idx.length]! !== (v + 1) % 7);
+  if (idx.length >= 2 && gaps.length === 1) {
+    const end = gaps[0]!;
+    const start = idx[(idx.indexOf(end) + 1) % idx.length]!;
+    return `${DAY_ORDER[start]}-${DAY_ORDER[end]}`;
+  }
   return idx.map((i) => DAY_ORDER[i]).join(",");
 }
 

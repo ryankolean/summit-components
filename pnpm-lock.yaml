@@ -14,6 +14,9 @@ importers:
       '@summit/checks':
         specifier: workspace:*
         version: link:packages/checks
+      '@summit/cli':
+        specifier: workspace:*
+        version: link:packages/cli
       '@summit/hero':
         specifier: workspace:*
         version: link:packages/hero
@@ -53,6 +56,30 @@ importers:
 
   packages/checks:
     dependencies:
+      node-html-parser:
+        specifier: ^7.0.1
+        version: 7.1.0
+
+  packages/cli:
+    devDependencies:
+      '@summit/checks':
+        specifier: workspace:^
+        version: link:../checks
+      '@summit/hero':
+        specifier: workspace:^
+        version: link:../hero
+      '@summit/schemas':
+        specifier: workspace:^
+        version: link:../schemas
+      '@summit/seo':
+        specifier: workspace:^
+        version: link:../seo
+      '@summit/tokens':
+        specifier: workspace:^
+        version: link:../tokens
+      esbuild:
+        specifier: ^0.28.2
+        version: 0.28.2
       node-html-parser:
         specifier: ^7.0.1
         version: 7.1.0

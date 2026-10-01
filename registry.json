@@ -4,10 +4,16 @@
     {
       "name": "hero",
       "package": "@summit/hero",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "Page hero with eyebrow, title, lede, up to two calls to action and an optional image",
       "kind": "component",
-      "stacks": ["astro", "next", "vite", "static-html", "nobuild-react"],
+      "stacks": [
+        "astro",
+        "next",
+        "vite",
+        "static-html",
+        "nobuild-react"
+      ],
       "entrypoints": {
         "react": "@summit/hero",
         "html": "@summit/hero/html",
@@ -16,7 +22,9 @@
       },
       "configSchema": "HeroConfigSchema",
       "example": "packages/hero/example/index.html",
-      "dependsOn": ["@summit/tokens"],
+      "dependsOn": [
+        "@summit/tokens"
+      ],
       "effort": "s"
     }
   ]
