@@ -174,6 +174,8 @@ jobs:
           node-version: 22
       - run: ${install}
       - run: summit verify-split .
+      - name: Validate decisions, once the Decisions stage has written them
+        run: if [ -f decisions/site.config.json ]; then summit decide validate decisions/site.config.json; fi
       - run: summit preview . --out _preview
       - run: summit check gate _preview --mode preview
 `,

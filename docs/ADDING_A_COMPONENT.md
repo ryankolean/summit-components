@@ -48,6 +48,11 @@ Add an entry to `registry.json`:
 
 `pnpm registry:check` fails if the entry disagrees with the package.
 
+Then add its config schema to `COMPONENT_CONFIG_SCHEMAS` in
+`packages/cli/src/decide.ts`, importing it from a React-free entry (like
+`@summit/hero/config`). Without that, `summit decide validate` places the
+component but warns that its config is not validated.
+
 ## 4. Ship it
 
 ```bash

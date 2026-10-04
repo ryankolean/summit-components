@@ -1,6 +1,6 @@
 {
   "name": "@summit/tokens",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Brand tokens as CSS custom properties and a Tailwind preset, with a WCAG contrast guard",
   "type": "module",
   "bin": {
@@ -13,7 +13,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json"
   },

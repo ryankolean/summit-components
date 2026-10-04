@@ -1,6 +1,6 @@
 {
   "name": "@summit/hero",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Page hero: React component, HTML renderer and a no-build custom element with identical markup",
   "type": "module",
   "exports": {

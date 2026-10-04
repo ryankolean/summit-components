@@ -1,6 +1,6 @@
 {
   "name": "@summit/seo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "JSON-LD, llms.txt and robots.txt generated from entity.json, the single source of public facts",
   "type": "module",
   "exports": {
