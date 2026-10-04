@@ -4,7 +4,7 @@
     {
       "name": "hero",
       "package": "@summit/hero",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Page hero with eyebrow, title, lede, up to two calls to action and an optional image",
       "kind": "component",
       "stacks": [

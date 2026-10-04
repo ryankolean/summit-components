@@ -1,7 +1,11 @@
 #!/usr/bin/env node
-import { resolve } from "node:path";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { main as checks } from "@summit/checks";
+import { BrandSchema } from "@summit/schemas";
+import { designDoc, implementationDoc, initSiteConfig, validateSiteConfig } from "./decide.js";
+import { loadRegistry } from "./registry.js";
 import { runIntake } from "./intake.js";
 import { executeNew, planNew } from "./new.js";
 import { renderPreview } from "./preview.js";
@@ -19,12 +23,78 @@ const USAGE = `usage: summit <command> [options]
   verify-split <repo-dir>
       Fail if a site repo holds private intake or non-public entity keys.
   check <audit|gate> <dir> [...]
-      Run @summit/checks (see summit check --help).`;
+      Run @summit/checks (see summit check --help).
+  decide init <repo> --client <name> [--existing <site-dir>] [--needs auth,database,serverActions,legacyRedirects] [--out <file>]
+      Draft site.config.json from site/entity.json (and an existing site's pages).
+  decide validate <site.config.json> [--registry <file>]
+      Validate against the schema, the registry and the hosting rules.
+  decide docs <site.config.json> --out <dir> [--brand <brand.json>]
+      Write design-doc.md and implementation-doc.md.`;
 
 const [command, ...rest] = process.argv.slice(2);
 
+function decide(argv: string[]): number {
+  const [sub, target, ...more] = argv;
+  const { values } = parseArgs({
+    args: more,
+    options: {
+      client: { type: "string" },
+      existing: { type: "string" },
+      needs: { type: "string" },
+      out: { type: "string" },
+      registry: { type: "string" },
+      brand: { type: "string" },
+    },
+  });
+  if (!target) return -1;
+  const registry = loadRegistry(values.registry);
+
+  if (sub === "init") {
+    if (!values.client) return -1;
+    const needs = Object.fromEntries((values.needs ?? "").split(",").filter(Boolean).map((n) => [n.trim(), true]));
+    const draft = initSiteConfig({ repo: target, client: values.client, registry, needs, ...(values.existing ? { existing: values.existing } : {}) });
+    const json = `${JSON.stringify(draft, null, 2)}\n`;
+    if (values.out) {
+      mkdirSync(dirname(values.out), { recursive: true });
+      writeFileSync(values.out, json);
+      console.log(`wrote ${values.out}`);
+    } else process.stdout.write(json);
+    return 0;
+  }
+
+  const raw = JSON.parse(readFileSync(target, "utf8"));
+  const { config, findings } = validateSiteConfig(raw, registry);
+  for (const f of findings) console.error(`${f.severity}: ${f.path || "(root)"}: ${f.message}`);
+  const failed = findings.some((f) => f.severity === "error");
+
+  if (sub === "validate") {
+    console.log(failed ? "site.config.json is invalid" : `site.config.json ok (${findings.length} warning(s))`);
+    return failed ? 1 : 0;
+  }
+  if (sub === "docs") {
+    if (!values.out) return -1;
+    if (failed || !config) {
+      console.error("fix the errors above before generating docs");
+      return 1;
+    }
+    const brand = values.brand ? BrandSchema.parse(JSON.parse(readFileSync(values.brand, "utf8"))) : undefined;
+    mkdirSync(values.out, { recursive: true });
+    writeFileSync(join(values.out, "design-doc.md"), designDoc(config, brand));
+    writeFileSync(join(values.out, "implementation-doc.md"), implementationDoc(config));
+    console.log(`wrote ${values.out}/design-doc.md and ${values.out}/implementation-doc.md`);
+    return 0;
+  }
+  return -1;
+}
+
 function run(): number {
   if (command === "check") return checks(rest);
+  if (command === "decide") {
+    const code = decide(rest);
+    if (code >= 0) return code;
+    console.log(USAGE);
+    return 2;
+  }
   const { values, positionals } = parseArgs({
     args: rest,
     allowPositionals: true,

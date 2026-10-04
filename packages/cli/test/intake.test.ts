@@ -134,6 +134,7 @@ describe("planNew", () => {
     ]);
     expect(Object.values(plan.files).join()).not.toContain(PRIVATE_MARKER);
     expect(plan.files[".github/workflows/ci.yml"]).toContain("summit verify-split .");
+    expect(plan.files[".github/workflows/ci.yml"]).toContain("summit decide validate decisions/site.config.json");
   });
 
   it("refuses an intake without valid public facts", () => {

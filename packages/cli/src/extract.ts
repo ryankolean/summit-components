@@ -69,7 +69,7 @@ function walk(root: string): string[] {
 }
 
 /** HTML pages with index.html first, so the home page wins ties. */
-function htmlPages(root: string): string[] {
+export function htmlPages(root: string): string[] {
   return walk(root)
     .filter((f) => f.endsWith(".html"))
     .sort((a, b) => (a === "index.html" ? -1 : b === "index.html" ? 1 : a.localeCompare(b)));

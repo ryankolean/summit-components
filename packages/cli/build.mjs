@@ -23,4 +23,6 @@ await build({
 });
 
 copyFileSync(createRequire(import.meta.url).resolve("@summit/hero/hero.css"), "dist/hero.css");
+// `summit decide validate` checks site.config.json against the registry this CLI shipped with.
+copyFileSync("../../registry.json", "dist/registry.json");
 console.log("bundled dist/summit.js");
