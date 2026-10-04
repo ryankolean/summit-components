@@ -1,0 +1,35 @@
+/* Modeled on a real hand-built site: palette in :root, roles assigned in rules. */
+:root {
+  --cream: #E8E3CE;
+  --ink: #2E241A;
+  --espresso: #2B2117;
+  --gold: #D3A75A;
+  --gold-deep: #6A4F1B;
+  --sage: #A9B8A4;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-ui: 'Jost', system-ui, sans-serif;
+  --radius: 2px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--ink);
+  background-color: var(--cream);
+}
+
+h1, h2, h3 { font-family: var(--font-display); color: var(--espresso); }
+
+.eyebrow { color: var(--gold-deep); }
+
+.btn {
+  --bg: var(--espresso); --fg: #F1EDDD;
+  background: var(--bg); color: var(--fg);
+  border-radius: var(--radius);
+}
+
+.btn--gold { --bg: var(--gold); --fg: var(--espresso); }
+
+@media (min-width: 768px) {
+  .btn { padding: 1em 2em; }
+}

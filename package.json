@@ -20,6 +20,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
     "@summit/checks": "workspace:*",
+    "@summit/cli": "workspace:*",
     "@summit/hero": "workspace:*",
     "@summit/schemas": "workspace:*",
     "@summit/seo": "workspace:*",

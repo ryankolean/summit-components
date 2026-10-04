@@ -49,6 +49,12 @@ for (const [name, pkg] of packages) {
 
     const manifestPath = join(packed, "package.json");
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    // A released package is built output. npm "prepares" any git dependency
+    // whose manifest has a build/prepare script by running `npm install` in it,
+    // which pulls devDependencies from the public registry and fails. Neither
+    // field means anything in a release, so drop both.
+    delete manifest.scripts;
+    delete manifest.devDependencies;
     for (const field of ["dependencies", "peerDependencies", "optionalDependencies"]) {
       for (const dep of Object.keys(manifest[field] ?? {})) {
         const target = packages.get(dep);

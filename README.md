@@ -15,6 +15,7 @@ Nothing here assumes one stack or requires a site to come from a template.
 | `@summit/hero` | The first component. One package, three renderings with identical markup: React (`@summit/hero`), HTML string (`@summit/hero/html`), custom element (`@summit/hero/embed`), plus `hero.css` |
 | `@summit/checks` | Checks that run against built HTML, so they work on any stack. CLI: `summit-checks audit|gate <dir>` |
 | `@summit/seo` | JSON-LD, FAQPage, `llms.txt` and `robots.txt` generated from `entity.json` |
+| `@summit/cli` | The `summit` command: `intake`, `new`, `preview`, `verify-split`, `check`. See [docs/INTAKE.md](docs/INTAKE.md) |
 
 Site templates live in `templates/` (Astro and Next). See [docs/TEMPLATES.md](docs/TEMPLATES.md).
 
