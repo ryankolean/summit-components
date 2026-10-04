@@ -1,0 +1,13 @@
+import type { Check } from "./types.js";
+export declare const document: Check;
+export declare const metadata: Check;
+export declare const headings: Check;
+export declare const socialCard: Check;
+export declare const jsonLd: Check;
+export declare const images: Check;
+export declare const internalLinks: Check;
+export declare const indexing: Check;
+export declare const robotsTxt: Check;
+export declare const sitemap: Check;
+export declare const llmsTxt: Check;
+export declare const ALL_CHECKS: Check[];
