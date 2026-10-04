@@ -106,17 +106,17 @@ describe("planNew", () => {
   const intake = tmp();
   runIntake({ site: fixture, out: intake });
 
-  it("creates a private repo by default and protects main", () => {
+  it("creates a public repo by default and protects main", () => {
     const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x" });
     const cmds = plan.steps.map((s) => s.cmd.join(" "));
-    expect(cmds[0]).toBe("gh repo create ryankolean/shellfish-bar --private --description Shellfish Bar website");
+    expect(cmds[0]).toBe("gh repo create ryankolean/shellfish-bar --public --description Shellfish Bar website");
     expect(cmds.some((c) => c.includes("branches/main/protection"))).toBe(true);
     expect(cmds.some((c) => c.includes("/pages"))).toBe(true);
   });
 
-  it("can create a public repo", () => {
-    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x", visibility: "public" });
-    expect(plan.steps[0]!.cmd).toContain("--public");
+  it("can create a private repo", () => {
+    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x", visibility: "private" });
+    expect(plan.steps[0]!.cmd).toContain("--private");
   });
 
   it("seeds the repo with public facts, a PR template and CI, and nothing private", () => {

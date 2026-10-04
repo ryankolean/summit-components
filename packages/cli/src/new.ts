@@ -41,7 +41,9 @@ export function planNew(options: NewOptions): NewPlan {
   if (!/^[a-z][a-z0-9-]*$/.test(options.client)) throw new Error(`repo name must be kebab-case: "${options.client}"`);
   const owner = options.owner ?? "ryankolean";
   const repo = `${owner}/${options.client}`;
-  const visibility = options.visibility ?? "private";
+  // Public by default (Ryan, 2026-10-04): site repos hold public facts only,
+  // and branch protection and Pages are free on public repos.
+  const visibility = options.visibility ?? "public";
 
   let entityJson: string;
   let brandJson: string;

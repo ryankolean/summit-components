@@ -12,8 +12,8 @@ const USAGE = `usage: summit <command> [options]
   intake <site-dir> --out <dir> [--name <name>]
       Measure an existing site. Public facts go to <out>/site/, private
       documents to <out>/. Point --out into the private intake repo.
-  new <repo-name> --intake <dir> [--public] [--dest <dir>] [--dry-run]
-      Create a client repo (private by default) seeded from an intake.
+  new <repo-name> --intake <dir> [--private] [--dest <dir>] [--dry-run]
+      Create a client repo (public by default) seeded from an intake.
   preview <repo-dir> --out <dir>
       Build the stack-neutral intake preview from site/*.json.
   verify-split <repo-dir>
@@ -33,7 +33,7 @@ function run(): number {
       name: { type: "string" },
       intake: { type: "string" },
       dest: { type: "string" },
-      public: { type: "boolean" },
+      private: { type: "boolean" },
       "dry-run": { type: "boolean" },
     },
   });
@@ -52,7 +52,7 @@ function run(): number {
     case "new": {
       if (!target || !values.intake) break;
       const dest = resolve(values.dest ?? target);
-      const plan = planNew({ client: target, intake: values.intake, dest, visibility: values.public ? "public" : "private" });
+      const plan = planNew({ client: target, intake: values.intake, dest, visibility: values.private ? "private" : "public" });
       if (values["dry-run"]) {
         for (const s of plan.steps) console.log(`${s.optional ? "(optional) " : ""}${s.cmd.join(" ")}`);
         console.log(`files: ${Object.keys(plan.files).join(", ")}`);

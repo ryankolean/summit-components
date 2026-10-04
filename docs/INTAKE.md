@@ -42,18 +42,22 @@ report. Fill them in from the owner's answers and rename them.
 ## New client
 
 ```bash
-summit new <repo-name> --intake <intake-repo>/<client> [--public] [--dry-run]
+summit new <repo-name> --intake <intake-repo>/<client> [--private] [--dry-run]
 ```
 
-1. Creates the repo (private unless `--public`) and seeds it with the intake's
+1. Creates the repo (public unless `--private`) and seeds it with the intake's
    public facts, a README, AGENTS.md, a PR template, CI (`verify-split`,
    preview build, preview gate) and a Pages workflow for the intake preview.
 2. Protects `main`: no force pushes, no deletions, and `ci` must pass.
 3. Enables GitHub Pages and runs the first preview deploy.
 
-Branch protection and Pages on a **private** repo need a paid GitHub plan.
-Those steps are reported as skipped, not failed, when the plan does not allow
-them. Run with `--dry-run` first to see every command.
+Client repos are public by default: they hold public facts only, and branch
+protection and Pages are free on public repos. With `--private`, those two
+steps need a paid GitHub plan and are reported as skipped, not failed, when the
+plan does not allow them. Run with `--dry-run` first to see every command.
+
+Private intake lives in the private `ryankolean/summit-intake` repo, one folder
+per client: `summit intake <site> --out ~/code/summit-intake/<client>`.
 
 ## Preview
 
