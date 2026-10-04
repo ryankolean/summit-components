@@ -1,0 +1,19 @@
+{
+  "name": "@summit/cli",
+  "version": "0.2.0",
+  "description": "The summit command: intake, client repo bootstrap, preview pages and site checks",
+  "type": "module",
+  "bin": {
+    "summit": "./dist/summit.js"
+  },
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}
