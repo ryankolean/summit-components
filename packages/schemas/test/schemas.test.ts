@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BrandSchema, EntitySchema, RegistrySchema } from "@summit/schemas";
+import { BrandSchema, EngagementSchema, EntitySchema, RateCardSchema, RegistrySchema } from "@summit/schemas";
 
 const brand = {
   name: "Demo Diner",
@@ -42,6 +42,7 @@ const entry = {
   kind: "component",
   stacks: ["astro", "static-html"],
   entrypoints: { react: "@summit/hero", html: "@summit/hero/html" },
+  effort: "s",
 };
 
 describe("BrandSchema", () => {
@@ -116,5 +117,52 @@ describe("RegistrySchema", () => {
   it("rejects a framework stack with no react or html entrypoint", () => {
     const bad = { ...entry, stacks: ["next"], entrypoints: { embed: "@summit/hero/embed" } };
     expect(RegistrySchema.safeParse({ schemaVersion: 1, components: [bad] }).success).toBe(false);
+  });
+});
+
+describe("RegistrySchema pricing", () => {
+  it("requires an effort size on components but not on tooling", () => {
+    const { effort: _effort, ...unsized } = entry;
+    expect(RegistrySchema.safeParse({ schemaVersion: 1, components: [unsized] }).success).toBe(false);
+    const tooling = { ...unsized, name: "checks", package: "@summit/checks", kind: "tooling", entrypoints: { cli: "summit-check", html: "x" } };
+    expect(RegistrySchema.safeParse({ schemaVersion: 1, components: [tooling] }).success).toBe(true);
+  });
+});
+
+const rateCard = {
+  schemaVersion: 1,
+  hourlyRate: 100,
+  afterHoursRate: 150,
+  effortHours: { xs: 1, s: 2, m: 4, l: 8, xl: 16 },
+  pageHours: 3,
+  tiers: [{ name: "Basic", monthlyFee: 50, includedUpdateHours: 1 }],
+};
+
+describe("RateCardSchema", () => {
+  it("fills defaults: not an example, half up front, the summit-proposals project", () => {
+    const parsed = RateCardSchema.parse(rateCard);
+    expect(parsed).toMatchObject({ example: false, depositPercent: 50, adoptFactor: 0.5, proposals: { project: "summit-proposals" } });
+  });
+
+  it("needs an hour figure for every effort size and unique tier names", () => {
+    expect(RateCardSchema.safeParse({ ...rateCard, effortHours: { xs: 1, s: 2 } }).success).toBe(false);
+    expect(RateCardSchema.safeParse({ ...rateCard, tiers: [...rateCard.tiers, ...rateCard.tiers] }).success).toBe(false);
+  });
+});
+
+describe("EngagementSchema", () => {
+  const engagement = { schemaVersion: 1, client: "demo", clientLegalName: "Demo LLC", proposalSlug: "a1b2c3d4e5f6g7h8", preparedOn: "2026-10-05" };
+
+  it("accepts a minimal engagement", () => {
+    expect(EngagementSchema.parse(engagement)).toMatchObject({ validDays: 30, lineItems: [], contract: {} });
+  });
+
+  it("rejects a guessable proposal slug", () => {
+    expect(EngagementSchema.safeParse({ ...engagement, proposalSlug: "demo" }).success).toBe(false);
+  });
+
+  it("needs hours or an amount on a line item, not both", () => {
+    expect(EngagementSchema.safeParse({ ...engagement, lineItems: [{ label: "x" }] }).success).toBe(false);
+    expect(EngagementSchema.safeParse({ ...engagement, lineItems: [{ label: "x", hours: 1, amount: 5 }] }).success).toBe(false);
   });
 });

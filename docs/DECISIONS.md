@@ -61,3 +61,8 @@ Each page is a list of sections, in page order:
 - `{"kind": "existing", "description": "...", "decision": "keep" | "replace-later"}`.
   Existing elements are kept by default. `replace-later` lists them for a
   future plan without scheduling a PR.
+
+## Next: proposals
+
+`summit proposal build` prices a valid `site.config.json` and writes the
+estimate, contract and proposal page. See [PROPOSALS.md](PROPOSALS.md).

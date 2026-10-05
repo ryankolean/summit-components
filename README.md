@@ -15,7 +15,7 @@ Nothing here assumes one stack or requires a site to come from a template.
 | `@summit/hero` | The first component. One package, three renderings with identical markup: React (`@summit/hero`), HTML string (`@summit/hero/html`), custom element (`@summit/hero/embed`), plus `hero.css` |
 | `@summit/checks` | Checks that run against built HTML, so they work on any stack. CLI: `summit-checks audit|gate <dir>` |
 | `@summit/seo` | JSON-LD, FAQPage, `llms.txt` and `robots.txt` generated from `entity.json` |
-| `@summit/cli` | The `summit` command: `intake`, `new`, `preview`, `verify-split`, `check`, `decide`. See [docs/INTAKE.md](docs/INTAKE.md) and [docs/DECISIONS.md](docs/DECISIONS.md) |
+| `@summit/cli` | The `summit` command: `intake`, `new`, `preview`, `verify-split`, `check`, `decide`, `proposal`. See [docs/INTAKE.md](docs/INTAKE.md), [docs/DECISIONS.md](docs/DECISIONS.md) and [docs/PROPOSALS.md](docs/PROPOSALS.md) |
 
 Site templates live in `templates/` (Astro and Next). See [docs/TEMPLATES.md](docs/TEMPLATES.md).
 
@@ -63,6 +63,7 @@ node packages/checks/dist/cli.js audit ../umbo            # a repo root publishe
 - [Adding a component](docs/ADDING_A_COMPONENT.md)
 - [Adding a stack](docs/ADDING_A_STACK.md)
 - [Adding a check](docs/ADDING_A_CHECK.md)
+- [Proposals: estimate, contract and proposal page](docs/PROPOSALS.md)
 
 ## Distribution: git tags
 
@@ -87,7 +88,9 @@ sites paste HTML and CSS and install nothing.
 
 Being public changes what may be committed here. Client data never goes in
 this repo: no private intake, pricing, contacts or credentials, and only
-sample content (`example.com`) in the templates.
+sample content (`example.com`) in the templates. Components carry a public
+effort size; the rate card that prices it is private (see
+[docs/PROPOSALS.md](docs/PROPOSALS.md)).
 
 ## Open decisions
 
