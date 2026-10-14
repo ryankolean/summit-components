@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Summit Motion Library</title>
+<link rel="stylesheet" href="shared/motion.css">
+<style>
+  .hero { padding-block: 64px 32px; }
+  .hero h1 { font-size: clamp(2.6rem, 7vw, 5rem); letter-spacing: -.02em; }
+  .hero p { color: var(--muted); max-width: 60ch; margin-top: 16px; font-size: 1.05rem; }
+  h2.sec { font-size: 1.6rem; margin-block: 48px 16px; }
+  .list { display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .row {
+    display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: 16px; align-items: baseline;
+    padding-block: 18px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--fg);
+    transition: padding var(--dur-base) var(--ease-out), background var(--dur-quick) var(--ease-out);
+  }
+  .row:hover, .row:focus-visible { padding-inline: 10px; background: var(--surface); }
+  .row .n { font-family: var(--font-mono); color: var(--muted); font-size: 13px; }
+  .row h3 { font-size: 1.25rem; }
+  .row p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+  .row .tag { white-space: nowrap; }
+  @media (max-width: 640px) { .row { grid-template-columns: 2.2rem minmax(0, 1fr); } .row .tag { grid-column: 2; justify-self: start; } }
+  .links { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .group { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .group h3 { font-size: 1rem; margin-bottom: 10px; font-family: var(--font-body); font-weight: 600; }
+  .group ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 14px; }
+  .group li span { color: var(--muted); }
+  footer { padding-block: 48px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <span class="tag">summit-components/motion</span>
+    <h1 style="margin-top:16px">Motion Library</h1>
+    <p>Reference patterns for adding motion to Summit sites. Each example is a single HTML file you can open directly, read in a minute, and hand to Claude as the pattern to copy. Shared timing and easing tokens live in <code>shared/motion.css</code>; the rules Claude follows live in <code>AGENTS.md</code>.</p>
+  </section>
+
+  <h2 class="sec">Examples</h2>
+  <nav class="list">
+    <a class="row" href="examples/01-css-scroll-reveal.html"><span class="n">01</span><div><h3>Scroll reveal + progress bar</h3><p>Cards rise into view, reading progress, parallax headline.</p></div><span class="tag">CSS only</span></a>
+    <a class="row" href="examples/02-view-transitions.html"><span class="n">02</span><div><h3>Shared-element transitions</h3><p>Grid tile morphs into a detail view.</p></div><span class="tag">View Transitions</span></a>
+    <a class="row" href="examples/03-gsap-hero-intro.html"><span class="n">03</span><div><h3>Hero intro sequence</h3><p>Masked character reveal, overlapping cues, shapes.</p></div><span class="tag">GSAP SplitText</span></a>
+    <a class="row" href="examples/04-gsap-scrolltrigger.html"><span class="n">04</span><div><h3>Pinned horizontal story + counters</h3><p>Scroll-scrubbed panels, numbers counting up.</p></div><span class="tag">GSAP ScrollTrigger</span></a>
+    <a class="row" href="examples/05-gsap-flip-filter.html"><span class="n">05</span><div><h3>Animated filtering</h3><p>Portfolio or menu grid that re-flows smoothly.</p></div><span class="tag">GSAP Flip</span></a>
+    <a class="row" href="examples/06-micro-interactions.html"><span class="n">06</span><div><h3>Micro-interactions</h3><p>Press, magnetic button, switch, like, toast, skeleton, underline.</p></div><span class="tag">CSS + JS</span></a>
+    <a class="row" href="examples/07-motion-springs.html"><span class="n">07</span><div><h3>Springs, stagger, inView</h3><p>Physical hover springs and staggered entrances.</p></div><span class="tag">Motion</span></a>
+    <a class="row" href="examples/08-svg-draw.html"><span class="n">08</span><div><h3>SVG line drawing</h3><p>Icons draw on load, illustration draws on scroll.</p></div><span class="tag">GSAP DrawSVG</span></a>
+  </nav>
+
+  <h2 class="sec">Where to find more</h2>
+  <div class="links">
+    <div class="group"><h3>Official pattern libraries</h3><ul>
+      <li><a href="https://gsap.com/showcase/">GSAP Showcase</a> <span>real sites using GSAP</span></li>
+      <li><a href="https://codepen.io/GreenSock">GreenSock on CodePen</a> <span>hundreds of demos</span></li>
+      <li><a href="https://examples.motion.dev">Motion Examples</a> <span>React / JS / Vue</span></li>
+      <li><a href="https://scroll-driven-animations.style">Scroll-driven Animations</a> <span>CSS demos by Bramus</span></li>
+      <li><a href="https://developer.chrome.com/docs/web-platform/view-transitions">View Transitions guide</a> <span>Chrome docs</span></li>
+    </ul></div>
+    <div class="group"><h3>Copy-paste component kits</h3><ul>
+      <li><a href="https://reactbits.dev">React Bits</a> <span>animated components</span></li>
+      <li><a href="https://magicui.design">Magic UI</a> <span>shadcn-compatible</span></li>
+      <li><a href="https://ui.aceternity.com">Aceternity UI</a> <span>Tailwind + Motion</span></li>
+      <li><a href="https://lottiefiles.com">LottieFiles</a> <span>designed animations</span></li>
+      <li><a href="https://rive.app/community">Rive Community</a> <span>interactive animations</span></li>
+    </ul></div>
+    <div class="group"><h3>Inspiration galleries</h3><ul>
+      <li><a href="https://www.awwwards.com/websites/">Awwwards</a> <span>award-winning sites</span></li>
+      <li><a href="https://tympanus.net/codrops/">Codrops</a> <span>tutorials + experiments</span></li>
+      <li><a href="https://godly.website">Godly</a> <span>curated web design</span></li>
+      <li><a href="https://land-book.com">Land-book</a> <span>landing pages</span></li>
+      <li><a href="https://mobbin.com">Mobbin</a> <span>app UI and flows</span></li>
+    </ul></div>
+    <div class="group"><h3>Tuning tools</h3><ul>
+      <li><a href="https://easings.net">Easings.net</a> <span>easing reference</span></li>
+      <li><a href="https://cubic-bezier.com">cubic-bezier.com</a> <span>curve editor</span></li>
+      <li><a href="https://gsap.com/docs/v3/Eases/">GSAP Ease Visualizer</a></li>
+      <li><a href="https://lenis.darkroom.engineering">Lenis</a> <span>smooth scroll</span></li>
+    </ul></div>
+  </div>
+  <footer>Created October 2026 for Jira ticket on motion tooling. Open any example with <code>open examples/03-gsap-hero-intro.html</code>.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05 GSAP Flip Filter</title>
+<link rel="stylesheet" href="../shared/motion.css">
+<style>
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .filters button {
+    font: 500 14px var(--font-body); padding: 8px 16px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface); color: var(--fg);
+    transition: background var(--dur-quick) var(--ease-out), color var(--dur-quick) var(--ease-out);
+  }
+  .filters button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .items { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); padding-bottom: 40px; }
+  .item {
+    border-radius: 14px; padding: 16px; min-height: 120px; color: #fff;
+    display: flex; flex-direction: column; justify-content: space-between; font-weight: 600;
+  }
+  .item small { font-family: var(--font-mono); font-weight: 400; opacity: .8; }
+  .item.web { background: #2f4bff; }
+  .item.app { background: #0f766e; }
+  .item.brand { background: #c2410c; }
+  .item.wide { grid-column: span 2; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar"><a href="../index.html">&larr; Motion Library</a><span class="tag">GSAP &middot; Flip</span></header>
+  <section class="intro">
+    <h1>Animated filtering</h1>
+    <p>Flip records where every card is, you change the DOM however you like, and Flip animates from the old layout to the new one. Great for portfolios, menus and product grids.</p>
+  </section>
+  <div class="filters" role="group" aria-label="Filter work">
+    <button aria-pressed="true" data-filter="all">All</button>
+    <button aria-pressed="false" data-filter="web">Websites</button>
+    <button aria-pressed="false" data-filter="app">Apps</button>
+    <button aria-pressed="false" data-filter="brand">Brand</button>
+  </div>
+  <div class="items">
+    <div class="item web wide" data-cat="web"><small>web</small>4PM Detroit</div>
+    <div class="item app" data-cat="app"><small>app</small>HostStand</div>
+    <div class="item brand" data-cat="brand"><small>brand</small>Impeccable Cookie</div>
+    <div class="item web" data-cat="web"><small>web</small>Pamar</div>
+    <div class="item app" data-cat="app"><small>app</small>Healthspan</div>
+    <div class="item web" data-cat="web"><small>web</small>Rare Find</div>
+    <div class="item brand wide" data-cat="brand"><small>brand</small>Summit Software</div>
+    <div class="item app" data-cat="app"><small>app</small>InkTrack</div>
+  </div>
+  <div class="how"><strong>Pattern:</strong> <code>Flip.getState()</code> &rarr; change the DOM &rarr; <code>Flip.from(state, { absolute: true, onEnter, onLeave })</code>. Works with any layout change: filtering, reordering, moving an element into a modal.</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
+<script>
+  gsap.registerPlugin(Flip);
+  const items = gsap.utils.toArray('.item');
+  const buttons = document.querySelectorAll('.filters button');
+
+  buttons.forEach((btn) => btn.addEventListener('click', () => {
+    const f = btn.dataset.filter;
+    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const state = Flip.getState(items);
+
+    items.forEach((el) => { el.style.display = (f === 'all' || el.dataset.cat === f) ? '' : 'none'; });
+    if (reduce) return;
+
+    Flip.from(state, {
+      duration: 0.6, ease: 'power2.inOut', absolute: true, stagger: 0.03,
+      onEnter: (els) => gsap.fromTo(els, { autoAlpha: 0, scale: 0.85 }, { autoAlpha: 1, scale: 1, duration: 0.45 }),
+      onLeave: (els) => gsap.to(els, { autoAlpha: 0, scale: 0.85, duration: 0.3 })
+    });
+  }));
+</script>
+</body>
+</html>

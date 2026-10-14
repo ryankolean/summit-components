@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 CSS Scroll Reveal</title>
+<link rel="stylesheet" href="../shared/motion.css">
+<style>
+  /* Reading progress bar driven by page scroll. No JavaScript. */
+  .progress {
+    position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 10;
+    background: var(--accent); transform-origin: 0 50%; transform: scaleX(0);
+  }
+  .cards { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); padding-block: 24px 160px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 28px;
+    min-height: 220px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .card h3 { font-size: 1.5rem; }
+  .card p { color: var(--muted); margin: 0; font-size: 15px; }
+  .num { font-family: var(--font-mono); color: var(--accent); font-size: 13px; }
+  .spacer { height: 40vh; display: grid; place-items: center; color: var(--muted); }
+
+  /* Progressive enhancement: only browsers with scroll timelines get motion.
+     Everything is fully visible without it. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .progress { animation: grow linear both; animation-timeline: scroll(root); }
+      .reveal {
+        animation: rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 35%;
+      }
+      .parallax { animation: drift linear both; animation-timeline: view(); }
+    }
+  }
+  @keyframes grow { to { transform: scaleX(1); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(var(--rise-lg)) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes drift { from { transform: translateY(-40px); } to { transform: translateY(40px); } }
+  .band { overflow: hidden; border-radius: 18px; margin-block: 40px; background: var(--fg); color: var(--bg); padding: 80px 32px; }
+  .band h2 { font-size: clamp(2rem, 6vw, 4.5rem); }
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="topbar"><a href="../index.html">&larr; Motion Library</a><span class="tag">Native CSS &middot; no library</span></header>
+  <section class="intro">
+    <h1>Scroll-driven reveals</h1>
+    <p>Cards rise as they enter the viewport, a progress bar tracks the page, and a headline drifts for depth. All of it is CSS <code>animation-timeline</code> with an <code>@supports</code> guard, so unsupported browsers just show the static page.</p>
+  </section>
+  <div class="spacer">Scroll down</div>
+  <section class="cards">
+    <article class="card reveal"><span class="num">01</span><h3>Fresh dough daily</h3><p>Use for feature grids and menus.</p></article>
+    <article class="card reveal"><span class="num">02</span><h3>Small batch</h3><p>Range: entry 0% to cover 35%.</p></article>
+    <article class="card reveal"><span class="num">03</span><h3>Local pickup</h3><p>Transform and opacity only, so it stays at 60fps.</p></article>
+    <article class="card reveal"><span class="num">04</span><h3>Gift boxes</h3><p>Zero JavaScript, runs off the main thread.</p></article>
+    <article class="card reveal"><span class="num">05</span><h3>Catering</h3><p>Works in Chrome, Edge and Safari 26+.</p></article>
+    <article class="card reveal"><span class="num">06</span><h3>Wholesale</h3><p>Firefox falls back to static.</p></article>
+  </section>
+  <section class="band"><h2 class="parallax">Motion that follows the reader.</h2></section>
+  <div class="how"><strong>Ask Claude:</strong> "Add the scroll reveal from summit-components/motion/examples/01 to the feature grid on this page, using our motion tokens."</div>
+</div>
+</body>
+</html>

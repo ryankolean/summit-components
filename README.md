@@ -19,6 +19,9 @@ Nothing here assumes one stack or requires a site to come from a template.
 
 Site templates live in `templates/` (Astro and Next). See [docs/TEMPLATES.md](docs/TEMPLATES.md).
 
+Motion rules and copyable animation patterns live in `motion/` (reference
+only, not a package). See [motion/README.md](motion/README.md).
+
 `registry.json` lists the components a site can pick, which stacks each one
 supports, and its entrypoints. `pnpm registry:check` validates it against the
 packages.
@@ -63,6 +66,7 @@ node packages/checks/dist/cli.js audit ../umbo            # a repo root publishe
 - [Adding a component](docs/ADDING_A_COMPONENT.md)
 - [Adding a stack](docs/ADDING_A_STACK.md)
 - [Adding a check](docs/ADDING_A_CHECK.md)
+- [Motion rules](motion/AGENTS.md)
 
 ## Distribution: git tags
 

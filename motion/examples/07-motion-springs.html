@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>07 Motion Springs</title>
+<link rel="stylesheet" href="../shared/motion.css">
+<style>
+  .bar { position: fixed; inset: 0 0 auto 0; height: 3px; background: var(--accent-2); transform-origin: 0 50%; transform: scaleX(0); z-index: 10; }
+  .cards { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); padding-block: 16px 48px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; min-height: 180px;
+    display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; will-change: transform;
+  }
+  .card h3 { font-size: 1.3rem; }
+  .card p { color: var(--muted); font-size: 14px; margin: 0; }
+  .price { font: 700 2rem var(--font-display); font-variant-numeric: tabular-nums; }
+  .spacer { height: 30vh; }
+  .box-row { display: flex; flex-wrap: wrap; gap: 14px; padding-block: 24px; align-items: center; }
+  .box { width: 64px; height: 64px; border-radius: 16px; background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="bar" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="topbar"><a href="../index.html">&larr; Motion Library</a><span class="tag">Motion (motion.dev) &middot; vanilla JS</span></header>
+  <section class="intro">
+    <h1>Springs, stagger and inView</h1>
+    <p>Motion is the library behind Framer Motion. In React you use <code>&lt;motion.div&gt;</code>; this page uses its plain-JS API: <code>animate</code>, <code>inView</code>, <code>scroll</code> and <code>stagger</code>. Hover the cards to feel a physical spring.</p>
+  </section>
+
+  <section class="cards">
+    <article class="card"><h3>Starter</h3><span class="price">$1,500</span><p>One-page site.</p></article>
+    <article class="card"><h3>Growth</h3><span class="price">$4,800</span><p>Multi-page with CMS.</p></article>
+    <article class="card"><h3>Product</h3><span class="price">$12k+</span><p>Web app MVP.</p></article>
+  </section>
+
+  <div class="spacer"></div>
+  <h2>Staggered entrance</h2>
+  <div class="box-row" id="boxes">
+    <div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div><div class="box"></div>
+  </div>
+  <button class="btn ghost" id="shuffle">Spring them</button>
+  <div class="spacer"></div>
+
+  <div class="how"><strong>React equivalent:</strong> <code>&lt;motion.div whileHover={{ scale: 1.04 }} transition={{ type: "spring", stiffness: 400, damping: 18 }} /&gt;</code> and <code>whileInView</code> for entrances. Install with <code>npm i motion</code>, import from <code>"motion/react"</code> (not <code>framer-motion</code>).</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.17/dist/motion.js"></script>
+<script>
+  const { animate, inView, scroll, stagger } = Motion;
+  const ok = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+
+  if (ok) {
+    // Scroll progress bar
+    scroll(animate('.bar', { scaleX: [0, 1] }, { ease: 'linear' }));
+
+    // Spring hover
+    const spring = { type: 'spring', stiffness: 400, damping: 18 };
+    document.querySelectorAll('.card').forEach((card) => {
+      card.addEventListener('pointerenter', () => animate(card, { scale: 1.04, y: -4 }, spring));
+      card.addEventListener('pointerleave', () => animate(card, { scale: 1, y: 0 }, spring));
+    });
+
+    // Staggered entrance when the row scrolls into view
+    inView('#boxes', () => {
+      animate('#boxes .box', { opacity: [0, 1], y: [30, 0] }, { delay: stagger(0.06), duration: 0.5, ease: [0.22, 1, 0.36, 1] });
+    });
+
+    document.getElementById('shuffle').addEventListener('click', () => {
+      animate('#boxes .box', { rotate: [0, 90, 0], scale: [1, 0.7, 1] }, { delay: stagger(0.05, { from: 'center' }), duration: 0.8 });
+    });
+  }
+</script>
+</body>
+</html>
