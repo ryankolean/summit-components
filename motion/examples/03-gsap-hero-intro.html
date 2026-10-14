@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>03 GSAP Hero Intro</title>
+<link rel="stylesheet" href="../shared/motion.css">
+<style>
+  .hero { position: relative; padding-block: 72px 96px; overflow: hidden; }
+  .hero h1 { font-size: clamp(2.8rem, 9vw, 7rem); letter-spacing: -.02em; max-width: 12ch; }
+  .hero p { font-size: 1.15rem; color: var(--muted); max-width: 46ch; margin: 24px 0 32px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+  .shape { position: absolute; border-radius: 50%; z-index: -1; }
+  .s1 { width: 220px; height: 220px; background: var(--accent); right: 6%; top: 40px; opacity: .9; }
+  .s2 { width: 120px; height: 120px; background: var(--accent-2); right: 24%; top: 220px; border-radius: 28px; }
+  .s3 { width: 64px; height: 64px; border: 3px solid var(--fg); right: 10%; top: 300px; }
+  @media (max-width: 700px) { .shape { opacity: .25; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar"><a href="../index.html">&larr; Motion Library</a><span class="tag">GSAP &middot; Timeline + SplitText</span></header>
+  <section class="hero">
+    <h1>Software that ships on time.</h1>
+    <p>A page-load sequence: characters rise out of a mask, the paragraph and buttons follow on overlapping cues, and the shapes pop in with a small overshoot. One orchestrated moment, then the page sits still.</p>
+    <div class="ctas"><button class="btn cta">Book a call</button><button class="btn ghost cta" id="replay">Replay intro</button></div>
+    <span class="shape s1" aria-hidden="true"></span>
+    <span class="shape s2" aria-hidden="true"></span>
+    <span class="shape s3" aria-hidden="true"></span>
+  </section>
+  <div class="how"><strong>Pattern:</strong> one <code>gsap.timeline()</code> with the position parameter (<code>"-=0.4"</code>) for overlap, wrapped in <code>gsap.matchMedia()</code> so reduced-motion users get the static page. <strong>Ask Claude:</strong> "Build a hero intro like summit-components/motion/examples/03 for impeccablecookie.com."</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script>
+  gsap.registerPlugin(SplitText);
+  let tl;
+  const mm = gsap.matchMedia();
+
+  document.fonts.ready.then(() => {
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const split = SplitText.create('.hero h1', { type: 'words,chars', mask: 'words' });
+      tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+        .from(split.chars, { yPercent: 110, duration: 0.8, stagger: 0.018 })
+        .from('.hero p', { y: 20, autoAlpha: 0, duration: 0.6 }, '-=0.45')
+        .from('.cta', { y: 16, autoAlpha: 0, duration: 0.5, stagger: 0.08 }, '-=0.35')
+        .from('.shape', { scale: 0, rotation: -40, duration: 0.9, ease: 'back.out(1.7)', stagger: 0.12 }, 0.15);
+      return () => split.revert();
+    });
+  });
+
+  document.getElementById('replay').addEventListener('click', () => tl && tl.restart());
+</script>
+</body>
+</html>

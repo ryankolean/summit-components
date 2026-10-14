@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08 SVG Line Drawing</title>
+<link rel="stylesheet" href="../shared/motion.css">
+<style>
+  .art { padding-block: 24px 40px; }
+  svg { width: 100%; height: auto; max-width: 900px; display: block; }
+  .ridge { fill: none; stroke: var(--fg); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .ridge.accent { stroke: var(--accent); }
+  .sun { fill: var(--accent-2); }
+  .tall { height: 70vh; display: grid; place-items: center; color: var(--muted); }
+  .icons { display: flex; flex-wrap: wrap; gap: 28px; padding-block: 24px; }
+  .icons svg { width: 72px; }
+  .icons path, .icons circle, .icons rect { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar"><a href="../index.html">&larr; Motion Library</a><span class="tag">GSAP &middot; DrawSVG</span></header>
+  <section class="intro">
+    <h1>Line drawing</h1>
+    <p>The mountain line draws itself as you scroll past it, and the icons draw in on load. DrawSVGPlugin handles path lengths for you; it is free now along with every other GSAP plugin.</p>
+  </section>
+  <div class="icons" aria-hidden="true">
+    <svg viewBox="0 0 48 48"><rect x="8" y="12" width="32" height="24" rx="3"/><path d="M8 18h32"/></svg>
+    <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="15"/><path d="M24 15v9l6 4"/></svg>
+    <svg viewBox="0 0 48 48"><path d="M10 26l9 9 19-21"/></svg>
+    <svg viewBox="0 0 48 48"><path d="M24 40s-14-8-14-19a8 8 0 0 1 14-5 8 8 0 0 1 14 5c0 11-14 19-14 19z"/></svg>
+  </div>
+  <div class="tall">Scroll to draw the ridge</div>
+  <section class="art">
+    <svg viewBox="0 0 900 300" role="img" aria-label="Line drawing of a mountain ridge with a sun">
+      <circle class="sun" cx="690" cy="90" r="38"/>
+      <path class="ridge" d="M10 270 L150 170 L210 210 L330 70 L420 160 L480 120 L600 230 L700 150 L890 270"/>
+      <path class="ridge accent" d="M300 105 L330 70 L360 100 L345 96 L330 110 L315 98 Z"/>
+      <path class="ridge" d="M10 285 H890"/>
+    </svg>
+  </section>
+  <div class="tall">&nbsp;</div>
+  <div class="how"><strong>Pattern:</strong> <code>gsap.from(path, { drawSVG: 0 })</code>. Add <code>scrollTrigger: { scrub: true }</code> to tie it to scroll. Good for logos, signatures, diagrams and route maps.</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+<script>
+  gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+  const mm = gsap.matchMedia();
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    gsap.from('.icons path, .icons circle, .icons rect', { drawSVG: 0, duration: 1.1, ease: 'power2.inOut', stagger: 0.12 });
+
+    gsap.timeline({ scrollTrigger: { trigger: '.art', start: 'top 80%', end: 'bottom 40%', scrub: true } })
+      .from('.art .ridge', { drawSVG: 0, ease: 'none', stagger: 0.15 })
+      .from('.sun', { scale: 0, transformOrigin: '50% 50%', ease: 'back.out(2)' }, 0.4);
+  });
+</script>
+</body>
+</html>
