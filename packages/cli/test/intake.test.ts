@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { loadSite, runChecks } from "@summit/checks";
 import { BrandSchema, EntitySchema } from "@summit/schemas";
-import { PRIVATE_MARKER, planNew, renderPreview, runIntake, verifySplit } from "../src/index.js";
+import { PRIVATE_MARKER, planNew, renderPreview, runIntake, tagCommit, verifySplit } from "../src/index.js";
 
 const fixture = fileURLToPath(new URL("./fixtures/site/", import.meta.url));
 const tmp = () => mkdtempSync(join(tmpdir(), "summit-cli-"));
@@ -105,9 +105,10 @@ describe("renderPreview", () => {
 describe("planNew", () => {
   const intake = tmp();
   runIntake({ site: fixture, out: intake });
+  const cliCommit = "49936982af8826b87021c3a991581610b4d41dec";
 
   it("creates a public repo by default and protects main", () => {
-    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x" });
+    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x", cliCommit });
     const cmds = plan.steps.map((s) => s.cmd.join(" "));
     expect(cmds[0]).toBe("gh repo create ryankolean/shellfish-bar --public --description Shellfish Bar website");
     expect(cmds.some((c) => c.includes("branches/main/protection"))).toBe(true);
@@ -115,12 +116,12 @@ describe("planNew", () => {
   });
 
   it("can create a private repo", () => {
-    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x", visibility: "private" });
+    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x", cliCommit, visibility: "private" });
     expect(plan.steps[0]!.cmd).toContain("--private");
   });
 
   it("seeds the repo with public facts, a PR template and CI, and nothing private", () => {
-    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x" });
+    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x", cliCommit });
     const files = Object.keys(plan.files).sort();
     expect(files).toEqual([
       ".github/pull_request_template.md",
@@ -137,6 +138,21 @@ describe("planNew", () => {
     expect(plan.files[".github/workflows/ci.yml"]).toContain("summit decide validate decisions/site.config.json");
   });
 
+  it("installs the CLI by commit over HTTPS and pins every action by commit (Roses regression)", () => {
+    const plan = planNew({ client: "shellfish-bar", intake, dest: "/tmp/x", cliCommit });
+    for (const file of [".github/workflows/ci.yml", ".github/workflows/preview.yml"]) {
+      const yml = plan.files[file]!;
+      expect(yml).toContain(`npm install --global --no-fund --no-audit https://codeload.github.com/ryankolean/summit-components/tar.gz/${cliCommit}`);
+      expect(yml).not.toContain("github:");
+      const uses = [...yml.matchAll(/uses: (\S+)/g)].map((m) => m[1]!);
+      expect(uses.length).toBeGreaterThan(0);
+      for (const ref of uses) expect(ref).toMatch(/^[\w-]+\/[\w-]+@[0-9a-f]{40}$/);
+      expect(yml).toContain("persist-credentials: false");
+      expect(yml).toMatch(/^permissions:\n {2}contents: read$/m);
+    }
+    expect(plan.files["README.md"]).toContain(`tar.gz/${cliCommit}`);
+  });
+
   it("refuses an intake without valid public facts", () => {
     const empty = tmp();
     writeFileSync(join(empty, "index.html"), "<html><head><title>x</title></head></html>");
@@ -147,5 +163,14 @@ describe("planNew", () => {
 
   it("rejects repo names that are not kebab-case", () => {
     expect(() => planNew({ client: "Shellfish Bar", intake, dest: "/tmp/x" })).toThrow(/kebab-case/);
+  });
+});
+
+describe("tagCommit", () => {
+  it("reads a lightweight tag and peels an annotated one", () => {
+    expect(tagCommit("aaa\trefs/tags/cli-v0.2.0\n", "cli-v0.2.0")).toBe("aaa");
+    expect(tagCommit("tagobj\trefs/tags/cli-v0.2.0\ncommit\trefs/tags/cli-v0.2.0^{}\n", "cli-v0.2.0")).toBe("commit");
+    expect(tagCommit("aaa\trefs/tags/cli-v0.2.0-beta\n", "cli-v0.2.0")).toBeUndefined();
+    expect(tagCommit("", "cli-v0.2.0")).toBeUndefined();
   });
 });
