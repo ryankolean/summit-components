@@ -1,10 +1,14 @@
 # Intake (Stage 1)
 
-`@summit/cli` provides the `summit` command. Install it from a release tag:
+`@summit/cli` provides the `summit` command. Install it from the commit of a
+release tag, over HTTPS (this is `cli-v0.2.0`):
 
 ```bash
-npm install --global github:ryankolean/summit-components#cli-v0.1.0
+npm install --global https://codeload.github.com/ryankolean/summit-components/tar.gz/49936982af8826b87021c3a991581610b4d41dec
 ```
+
+For another version, take the commit from
+`git ls-remote https://github.com/ryankolean/summit-components.git refs/tags/cli-v<version>`.
 
 Intake turns a client's existing site (or the owner's answers) into two kinds
 of output, kept in two different places:

@@ -73,15 +73,25 @@ node packages/checks/dist/cli.js audit ../umbo            # a repo root publishe
 There is no registry. On every merge to `main`, the `release` workflow tags each
 package version that has no tag yet, as `<name>-v<version>` (`hero-v0.1.0`).
 Each tag is a standalone commit holding just that package, built, at its root,
-with its `@summit/*` dependencies pointing at their own tags. Sites install:
+with its `@summit/*` dependencies pointing at their own tags' commits. Sites
+install a release from the tarball of its tag's commit, over HTTPS:
 
 ```json
-"@summit/hero": "github:ryankolean/summit-components#hero-v0.1.0"
+"@summit/hero": "https://codeload.github.com/ryankolean/summit-components/tar.gz/9c04e300709f89664ed6d63f9a78899bb76e6b1c"
 ```
 
+That commit is `hero-v0.2.1`. A tag's commit comes from
+`git ls-remote https://github.com/ryankolean/summit-components.git refs/tags/hero-v0.2.1`.
+Never use a `github:...#hero-v0.2.1` spec: npm fetches it over SSH, which fails
+on CI runners with no key, and records no integrity hash for it. Tags released
+before this rule (`hero-v0.2.1`, `seo-v0.1.2`, `tokens-v0.1.1` and earlier)
+still point their `@summit/schemas` dependency at a `github:` spec; a site
+installing one adds npm `overrides` with the codeload URL until that package's
+next version.
+
 `node scripts/use-tags.mjs <site-dir>` rewrites a site's `@summit/*`
-dependencies to the current tags. To release, run `pnpm version-packages` in a
-PR; merging it tags the new versions.
+dependencies to the current tags' commits. To release, run
+`pnpm version-packages` in a PR; merging it tags the new versions.
 
 ## Developed in the open
 

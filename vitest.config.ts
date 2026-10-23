@@ -12,6 +12,6 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["packages/*/test/**/*.test.{ts,tsx}"],
+    include: ["packages/*/test/**/*.test.{ts,tsx}", "scripts/test/**/*.test.mjs"],
   },
 });
