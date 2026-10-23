@@ -1,3 +1,6 @@
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { BrandSchema, EntitySchema } from "@summit/schemas";
@@ -46,6 +49,36 @@ describe("extractBrand", () => {
   it("takes the accent from a button variant", () => {
     expect(brand.colors.accent).toBe("#D3A75A");
     expect(roles.accent?.source).toBe(".btn--gold background");
+  });
+
+  it("takes primary and onPrimary from a primary variant when the base button has no background (Roses regression)", () => {
+    const dir = mkdtempSync(join(tmpdir(), "summit-extract-"));
+    writeFileSync(join(dir, "index.html"), "<!doctype html><html><head><title>Variant Bar</title></head><body></body></html>");
+    writeFileSync(
+      join(dir, "style.css"),
+      `:root { --paper: #F5F1EA; --wine: #8A1C2B; --flame: #F28C4B; --pine: #26302A; --plum: #5A1E4A; }
+       body { background: var(--paper); color: var(--wine); }
+       .btn { display: inline-block; border: 1px solid transparent; }
+       .btn--primary { background: var(--flame); color: var(--pine); }
+       .btn--primary:hover { background: #E07A3A; }
+       .btn--secondary { background: transparent; color: var(--wine); }`,
+    );
+    const { brand: b, roles: r } = extractBrand(dir, "Variant Bar");
+    expect(b.colors.primary).toBe("#F28C4B");
+    expect(b.colors.onPrimary).toBe("#26302A");
+    expect(r.primary).toMatchObject({ source: ".btn--primary background", measured: true });
+    expect(r.onPrimary).toMatchObject({ source: ".btn--primary color", measured: true });
+    expect(b.colors.accent).not.toBe(b.colors.primary);
+    expect(b.colors.accent).not.toBe(b.colors.fg);
+  });
+
+  it("prefers a primary variant over the base button background", () => {
+    const dir = mkdtempSync(join(tmpdir(), "summit-extract-"));
+    writeFileSync(join(dir, "index.html"), "<!doctype html><html><head><title>x</title></head><body></body></html>");
+    writeFileSync(join(dir, "style.css"), `.btn { background: #444444; color: #FFFFFF; } .btn-primary { background: #1D4ED8; }`);
+    const { brand: b } = extractBrand(dir, "x");
+    expect(b.colors.primary).toBe("#1D4ED8");
+    expect(b.colors.onPrimary).toBe("#FFFFFF");
   });
 
   it("infers muted from other text colors that meet AA on the page", () => {

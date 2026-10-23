@@ -13,6 +13,8 @@ export interface NewOptions {
   dest: string;
   owner?: string;
   visibility?: "private" | "public";
+  /** Commit of this CLI's release tag. Resolved with `git ls-remote` when omitted. */
+  cliCommit?: string;
 }
 
 export interface Step {
@@ -31,9 +33,31 @@ export interface NewPlan {
   files: Record<string, string>;
 }
 
+const FRAMEWORK_REPO = "ryankolean/summit-components";
+
 function cliVersion(): string {
   const require = createRequire(import.meta.url);
   return JSON.parse(readFileSync(require.resolve("../package.json"), "utf8")).version;
+}
+
+/** The commit a tag names in `git ls-remote` output, peeling an annotated tag. */
+export function tagCommit(lsRemote: string, tag: string): string | undefined {
+  const refs = new Map(lsRemote.split("\n").map((line) => line.split("\t").reverse() as [string, string]));
+  return refs.get(`refs/tags/${tag}^{}`) ?? refs.get(`refs/tags/${tag}`);
+}
+
+/**
+ * Release tags can move; commits cannot. Client CI installs the CLI by commit,
+ * over HTTPS, because npm fetches `github:` specs over SSH and CI has no key.
+ */
+export function resolveCliCommit(version: string): string {
+  const tag = `cli-v${version}`;
+  const out = execFileSync("git", ["ls-remote", `https://github.com/${FRAMEWORK_REPO}.git`, `refs/tags/${tag}`, `refs/tags/${tag}^{}`], {
+    encoding: "utf8",
+  });
+  const commit = tagCommit(out, tag);
+  if (!commit) throw new Error(`${tag} is not released on github.com/${FRAMEWORK_REPO}; run summit new from a released CLI`);
+  return commit;
 }
 
 /** Everything `summit new` will do, without doing it. Tests and --dry-run read this. */
@@ -54,7 +78,8 @@ export function planNew(options: NewOptions): NewPlan {
     throw new Error(`${options.intake}/site needs a valid entity.json and brand.json; finish the intake drafts first`);
   }
   const entity = EntitySchema.parse(JSON.parse(entityJson));
-  const files = seedFiles({ name: entity.name, repo, version: cliVersion() });
+  const version = cliVersion();
+  const files = seedFiles({ name: entity.name, repo, version, commit: options.cliCommit ?? resolveCliCommit(version) });
   files["site/entity.json"] = entityJson;
   files["site/brand.json"] = brandJson;
 
@@ -118,8 +143,17 @@ export function executeNew(plan: NewPlan, dest: string, log: (line: string) => v
   return results;
 }
 
-function seedFiles({ name, repo, version }: { name: string; repo: string; version: string }): Record<string, string> {
-  const install = `npm install --global github:ryankolean/summit-components#cli-v${version}`;
+// Actions pinned by commit so a client repo passes zizmor from its first push.
+const CHECKOUT = "actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0";
+const SETUP_NODE = "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0";
+const UPLOAD_PAGES = "actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1";
+const DEPLOY_PAGES = "actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5";
+
+function seedFiles({ name, repo, version, commit }: { name: string; repo: string; version: string; commit: string }): Record<string, string> {
+  const install = `npm install --global --no-fund --no-audit https://codeload.github.com/${FRAMEWORK_REPO}/tar.gz/${commit}`;
+  const installStep = `      # @summit/cli ${version} (tag cli-v${version}), pinned by commit, fetched over HTTPS
+      - name: Install summit
+        run: ${install} # zizmor: ignore[adhoc-packages] pinned to an immutable commit`;
   return {
     "README.md": `# ${name}
 
@@ -164,15 +198,20 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ${CHECKOUT}
+        with:
+          persist-credentials: false
+      - uses: ${SETUP_NODE}
         with:
           node-version: 22
-      - run: ${install}
+${installStep}
       - run: summit verify-split .
       - name: Validate decisions, once the Decisions stage has written them
         run: if [ -f decisions/site.config.json ]; then summit decide validate decisions/site.config.json; fi
@@ -202,17 +241,19 @@ jobs:
       name: github-pages
       url: \${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ${CHECKOUT}
+        with:
+          persist-credentials: false
+      - uses: ${SETUP_NODE}
         with:
           node-version: 22
-      - run: ${install}
+${installStep}
       - run: summit preview . --out _preview
-      - uses: actions/upload-pages-artifact@v3
+      - uses: ${UPLOAD_PAGES}
         with:
           path: _preview
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: ${DEPLOY_PAGES}
 `,
   };
 }
