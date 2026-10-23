@@ -1,6 +1,38 @@
 /*
  * @summit/hero. Styles only against --summit-* tokens from @summit/tokens, with
  * fallbacks so the component still reads correctly before tokens load.
+ *
+ * Brand tokens (from brand.json): --summit-color-*, --summit-font-*, --summit-radius.
+ * The CTA outline colour reads --summit-color-link when the brand sets it.
+ *
+ * Hero tokens, for matching an existing design without overriding component
+ * rules. Set them on :root, the page, or <summit-hero>. Unset, each falls back
+ * to the default shown.
+ *
+ *   --summit-hero-max-width        width of the hero box, inline padding included;
+ *                                  the background still spans the section (100%)
+ *   --summit-hero-padding-block    clamp(3rem, 8vw, 7rem)
+ *   --summit-hero-padding-inline   clamp(1rem, 5vw, 4rem)
+ *   --summit-hero-gap              clamp(1.5rem, 4vw, 3rem)
+ *   --summit-hero-title-size       clamp(2.25rem, 6vw, 4.5rem)
+ *   --summit-hero-lede-size        clamp(1.05rem, 2vw, 1.25rem)
+ *   --summit-hero-cta-padding      0.75rem 1.5rem
+ *   --summit-hero-cta-font         --summit-font-body
+ *   --summit-hero-cta-radius       --summit-radius
+ *   --summit-hero-media-radius     --summit-radius
+ *
+ *   --summit-hero-cta-primary-bg             --summit-color-primary
+ *   --summit-hero-cta-primary-fg             --summit-color-on-primary
+ *   --summit-hero-cta-primary-hover-bg       the primary CTA's bg
+ *   --summit-hero-cta-primary-hover-fg       the primary CTA's fg
+ *   --summit-hero-cta-secondary-fg           --summit-color-link, then --summit-color-primary
+ *   --summit-hero-cta-secondary-hover-bg     transparent
+ *   --summit-hero-cta-secondary-hover-fg     the secondary CTA's fg
+ *
+ * The filled CTA's border follows its background; the outline CTA's border
+ * stays its resting text colour. CTA colours are set for every link state at
+ * two-class specificity, so a site's a:link, a:visited or a:hover rule cannot
+ * recolour them.
  */
 summit-hero {
   display: block;
@@ -8,9 +40,13 @@ summit-hero {
 
 .summit-hero {
   display: grid;
-  gap: clamp(1.5rem, 4vw, 3rem);
+  gap: var(--summit-hero-gap, clamp(1.5rem, 4vw, 3rem));
   align-items: center;
-  padding: clamp(3rem, 8vw, 7rem) clamp(1rem, 5vw, 4rem);
+  padding-block: var(--summit-hero-padding-block, clamp(3rem, 8vw, 7rem));
+  padding-inline: calc(
+    var(--summit-hero-padding-inline, clamp(1rem, 5vw, 4rem)) +
+      max(0px, (100% - var(--summit-hero-max-width, 100%)) / 2)
+  );
   background: var(--summit-color-bg, #ffffff);
   color: var(--summit-color-fg, #111111);
   font-family: var(--summit-font-body, system-ui, sans-serif);
@@ -19,6 +55,10 @@ summit-hero {
 @media (min-width: 768px) {
   .summit-hero--with-media {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .summit-hero--stacked {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -44,7 +84,7 @@ summit-hero {
 .summit-hero__title {
   margin: 0;
   font-family: var(--summit-font-display, Georgia, serif);
-  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  font-size: var(--summit-hero-title-size, clamp(2.25rem, 6vw, 4.5rem));
   font-weight: 400;
   line-height: 1.05;
   overflow-wrap: anywhere;
@@ -52,7 +92,7 @@ summit-hero {
 
 .summit-hero__lede {
   margin: 1.25rem 0 0;
-  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  font-size: var(--summit-hero-lede-size, clamp(1.05rem, 2vw, 1.25rem));
   line-height: 1.55;
   color: var(--summit-color-muted, #555555);
 }
@@ -72,21 +112,24 @@ summit-hero {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 0.75rem 1.5rem;
-  border: 2px solid var(--summit-color-primary, #111111);
-  border-radius: var(--summit-radius, 0);
+  padding: var(--summit-hero-cta-padding, 0.75rem 1.5rem);
+  border: 2px solid;
+  border-radius: var(--summit-hero-cta-radius, var(--summit-radius, 0));
+  font-family: var(--summit-hero-cta-font, var(--summit-font-body, system-ui, sans-serif));
   font-weight: 600;
   text-decoration: none;
 }
 
-.summit-hero__cta--primary {
-  background: var(--summit-color-primary, #111111);
-  color: var(--summit-color-on-primary, #ffffff);
+.summit-hero__cta--primary:any-link {
+  border-color: var(--summit-hero-cta-primary-bg, var(--summit-color-primary, #111111));
+  background: var(--summit-hero-cta-primary-bg, var(--summit-color-primary, #111111));
+  color: var(--summit-hero-cta-primary-fg, var(--summit-color-on-primary, #ffffff));
 }
 
-.summit-hero__cta--secondary {
+.summit-hero__cta--secondary:any-link {
+  border-color: var(--summit-hero-cta-secondary-fg, var(--summit-color-link, var(--summit-color-primary, #111111)));
   background: transparent;
-  color: var(--summit-color-primary, #111111);
+  color: var(--summit-hero-cta-secondary-fg, var(--summit-color-link, var(--summit-color-primary, #111111)));
 }
 
 .summit-hero__cta:hover {
@@ -94,15 +137,43 @@ summit-hero {
   text-underline-offset: 0.2em;
 }
 
+.summit-hero__cta--primary:hover {
+  border-color: var(
+    --summit-hero-cta-primary-hover-bg,
+    var(--summit-hero-cta-primary-bg, var(--summit-color-primary, #111111))
+  );
+  background: var(
+    --summit-hero-cta-primary-hover-bg,
+    var(--summit-hero-cta-primary-bg, var(--summit-color-primary, #111111))
+  );
+  color: var(
+    --summit-hero-cta-primary-hover-fg,
+    var(--summit-hero-cta-primary-fg, var(--summit-color-on-primary, #ffffff))
+  );
+}
+
+.summit-hero__cta--secondary:hover {
+  background: var(--summit-hero-cta-secondary-hover-bg, transparent);
+  color: var(
+    --summit-hero-cta-secondary-hover-fg,
+    var(--summit-hero-cta-secondary-fg, var(--summit-color-link, var(--summit-color-primary, #111111)))
+  );
+}
+
 .summit-hero__cta:focus-visible {
   outline: 3px solid var(--summit-color-accent, #0066cc);
   outline-offset: 3px;
+}
+
+.summit-hero__picture {
+  display: block;
+  min-width: 0;
 }
 
 .summit-hero__media {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: var(--summit-radius, 0);
+  border-radius: var(--summit-hero-media-radius, var(--summit-radius, 0));
   object-fit: cover;
 }
