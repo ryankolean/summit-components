@@ -68,6 +68,14 @@ describe("BrandSchema", () => {
     const { accent: _accent, ...colors } = brand.colors;
     expect(BrandSchema.safeParse({ ...brand, colors }).success).toBe(false);
   });
+
+  it("takes an optional hex link role", () => {
+    expect(BrandSchema.parse(brand).colors.link).toBeUndefined();
+    const linked = { ...brand, colors: { ...brand.colors, link: "#9C1B22" } };
+    expect(BrandSchema.parse(linked).colors.link).toBe("#9C1B22");
+    const bad = { ...brand, colors: { ...brand.colors, link: "crimson" } };
+    expect(BrandSchema.safeParse(bad).success).toBe(false);
+  });
 });
 
 describe("EntitySchema", () => {

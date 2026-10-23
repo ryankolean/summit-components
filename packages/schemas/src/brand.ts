@@ -16,7 +16,7 @@ export const FontStack = z.object({
 });
 
 /**
- * Brand tokens for one site. The six named colors are roles, not hues: every
+ * Brand tokens for one site. The named colors are roles, not hues: every
  * component styles itself from roles, so a rebrand never touches component code.
  * Extra keys are allowed for site-specific colors.
  */
@@ -30,6 +30,12 @@ export const BrandSchema = z.object({
       primary: HexColor,
       onPrimary: HexColor,
       accent: HexColor,
+      /**
+       * Text in the primary role on bg: links and outline button labels. Set it
+       * when primary is a fill that cannot be read as text on bg; unset, those
+       * use primary.
+       */
+      link: HexColor.optional(),
     })
     .catchall(HexColor),
   fonts: z.object({
