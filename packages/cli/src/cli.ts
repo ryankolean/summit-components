@@ -4,6 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { main as checks } from "@summit/checks";
 import { BrandSchema } from "@summit/schemas";
+import { renderBrandHub } from "./brand-hub.js";
 import { designDoc, implementationDoc, initSiteConfig, validateSiteConfig } from "./decide.js";
 import { loadRegistry } from "./registry.js";
 import { runIntake } from "./intake.js";
@@ -20,6 +21,9 @@ const USAGE = `usage: summit <command> [options]
       Create a client repo (public by default) seeded from an intake.
   preview <repo-dir> --out <dir>
       Build the stack-neutral intake preview from site/*.json.
+  brand-hub <intake-dir> [--out <dir>]
+      Build the client brand hub, one self-contained interactive page, from
+      site/brand.json and brand-hub.json. Default out: <intake-dir>/out/brand-hub.
   verify-split <repo-dir>
       Fail if a site repo holds private intake or non-public entity keys.
   check <audit|gate> <dir> [...]
@@ -135,6 +139,13 @@ function run(): number {
       if (!target || !values.out) break;
       renderPreview(target, values.out);
       console.log(`wrote ${values.out}/index.html`);
+      return 0;
+    }
+    case "brand-hub": {
+      if (!target) break;
+      const result = renderBrandHub({ intake: target, ...(values.out ? { out: values.out } : {}) });
+      for (const w of result.warnings) console.error(`warn: ${w}`);
+      console.log(`wrote ${result.file}${result.draft ? " (draft: brand-hub.json not found, using the draft)" : ""}`);
       return 0;
     }
     case "verify-split": {

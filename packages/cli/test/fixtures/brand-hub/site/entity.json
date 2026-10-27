@@ -1,0 +1,9 @@
+{
+  "name": "Northlight Roasters",
+  "type": "CafeOrCoffeeShop",
+  "description": "Small-batch coffee roasted on the shore of Lake Example.",
+  "url": "https://example.com/",
+  "locations": [
+    { "address": { "street": "1 Example St", "locality": "Example", "region": "MI", "postalCode": "00000" } }
+  ]
+}

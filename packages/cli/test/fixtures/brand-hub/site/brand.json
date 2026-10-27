@@ -1,0 +1,17 @@
+{
+  "name": "Northlight Roasters",
+  "colors": {
+    "bg": "#F7F3EC",
+    "fg": "#1F1A14",
+    "muted": "#5E554A",
+    "primary": "#1E3A34",
+    "onPrimary": "#F7F3EC",
+    "accent": "#E8A33D",
+    "link": "#1E3A34"
+  },
+  "fonts": {
+    "display": { "family": "Fraunces", "fallback": "Georgia, serif", "weights": [400, 600] },
+    "body": { "family": "Inter", "fallback": "system-ui, sans-serif", "weights": [400, 600] }
+  },
+  "radius": "10px"
+}

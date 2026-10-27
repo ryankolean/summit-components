@@ -3,6 +3,7 @@ import { basename, join, resolve } from "node:path";
 import { BrandSchema, EntitySchema, type Brand, type Entity } from "@summit/schemas";
 import { formatHours } from "@summit/seo";
 import { checkContrast, contrastRatio } from "@summit/tokens";
+import { brandHubDraft } from "./brand-hub.js";
 import { extractBrand, extractEntity, type RoleSource } from "./extract.js";
 
 /**
@@ -63,6 +64,9 @@ export function runIntake(options: IntakeOptions): IntakeResult {
   writeFileSync(join(options.out, "intake-report.md"), report({ site, pages, roles, palette, missing, errors, brand: parsedBrand }));
   writeFileSync(join(options.out, "entity-profile.md"), entityProfile(name, parsedEntity, missing));
   writeFileSync(join(options.out, "style-guide.md"), styleGuide(name, parsedBrand, roles));
+  // Client-facing brand hub content: fill in from the owner's answers, rename to
+  // brand-hub.json, then run `summit brand-hub`.
+  writeFileSync(join(options.out, "brand-hub.draft.json"), `${JSON.stringify(brandHubDraft(parsedBrand, parsedEntity), null, 2)}\n`);
 
   return { entityValid: entityResult.success, brandValid: brandResult.success, errors, missing, roles };
 }
