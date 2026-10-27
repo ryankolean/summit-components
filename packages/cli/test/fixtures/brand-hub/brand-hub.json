@@ -1,0 +1,36 @@
+{
+  "tagline": "Small-batch coffee, roasted where the lake meets the woods.",
+  "summary": "Northlight is a neighborhood roaster for people who want great coffee without the ceremony. The brand is warm, plain-spoken and a little outdoorsy.",
+  "version": "1.0",
+  "logos": [
+    { "name": "Primary logo", "file": "assets/logos/primary.svg", "on": "bg", "usage": "Default on light backgrounds." },
+    { "name": "Reversed logo", "file": "assets/logos/reversed.svg", "on": "primary", "usage": "On the forest green and on dark photography." }
+  ],
+  "logoRules": { "clearSpace": "Keep the height of the mark clear on every side.", "minSize": "24px tall on screen, 0.5in in print." },
+  "colorUsage": {
+    "bg": "Page backgrounds and large calm areas.",
+    "fg": "Body text and headlines.",
+    "muted": "Captions, metadata and secondary text.",
+    "primary": "Buttons, header bands and key moments.",
+    "onPrimary": "Text and icons on the forest green.",
+    "accent": "Highlights and tags. A ground, never text on light backgrounds.",
+    "link": "Inline links."
+  },
+  "voice": {
+    "summary": "We sound like the friend behind the counter who knows a lot and shows off none of it.",
+    "traits": [
+      { "name": "Warm", "description": "Welcoming first, informative second.", "do": "Come by early, the first batch is still warm.", "dont": "Patrons are invited to arrive at opening." },
+      { "name": "Plain-spoken", "description": "Short words, short sentences.", "do": "Bright, nutty, easy to drink.", "dont": "A multidimensional cup with an effervescent acidity profile." },
+      { "name": "Outdoorsy", "description": "Borrow from the lake and the woods, lightly.", "do": "Fuel for the trail.", "dont": "Embark on a sensory expedition." }
+    ],
+    "examples": [
+      { "context": "Instagram caption", "write": "New single origin just hit the shelf. Tastes like a cold morning that warms up fast.", "avoid": "Introducing our latest premium artisanal offering!!!" },
+      { "context": "Closed sign", "write": "Gone roasting. Back at 7 tomorrow.", "avoid": "We are currently closed. We apologize for any inconvenience." }
+    ]
+  },
+  "imagery": { "summary": "Natural light, real hands, real mugs. Morning over midday. Never stock.", "keywords": ["Morning light", "Hands and mugs", "Lake textures", "Wood grain", "Steam"] },
+  "rules": {
+    "do": ["Use the forest green for one moment per screen.", "Let the cream background breathe.", "Pair Fraunces headlines with Inter body text."],
+    "dont": ["Set body text in the accent amber.", "Place the primary logo on photography.", "Mix in other display fonts."]
+  }
+}

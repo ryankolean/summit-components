@@ -9,7 +9,7 @@ export interface SplitFinding {
 }
 
 const TEXT = new Set([".md", ".json", ".html", ".txt", ".js", ".mjs", ".ts", ".tsx", ".astro", ".css", ".yml", ".yaml", ""]);
-const PRIVATE_NAMES = new Set(["entity-profile.md", "intake-report.md", "owner-intake.md"]);
+const PRIVATE_NAMES = new Set(["entity-profile.md", "intake-report.md", "owner-intake.md", "brand-hub.json", "brand-hub.draft.json"]);
 const ENTITY_KEYS = new Set(Object.keys(EntitySchema.shape));
 
 /**

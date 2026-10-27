@@ -16,7 +16,7 @@ of output, kept in two different places:
 | Output | Where it lives | Public? |
 |---|---|---|
 | `site/entity.json`, `site/brand.json` | The client's site repo | Yes. Public facts only, validated against `@summit/schemas` |
-| `intake-report.md`, `entity-profile.md`, `style-guide.md` | The private Summit intake repo, one folder per client | **Never** in a site repo |
+| `intake-report.md`, `entity-profile.md`, `style-guide.md`, `brand-hub.draft.json` | The private Summit intake repo, one folder per client | **Never** in a site repo |
 
 Every private document starts with a marker line. `summit verify-split` fails
 any site repo that contains it, contains a private intake filename, or has an
@@ -72,3 +72,8 @@ summit preview <repo> --out _preview
 A stack-neutral page built only from `site/*.json`: brand tokens, the hero,
 hours, address, and FAQ, with JSON-LD and `llms.txt`. It is always `noindex`.
 It is what a new client repo deploys until Decisions picks a stack.
+
+## Brand hub
+
+The client-facing brand deliverable is built from the same intake folder:
+`summit brand-hub <intake-dir>`. See [BRAND_HUB.md](BRAND_HUB.md).
