@@ -84,6 +84,7 @@ export interface RoleSource {
 const selectors = (rule: CssRule) => rule.selector.split(",").map((s) => s.trim());
 const BASE_BUTTON = /^(?:\.btn|\.button|button)$/;
 const BUTTON_VARIANT = /^\.(?:btn|button)(?:--|-)[\w-]+$/;
+const PRIMARY_VARIANT = /^\.(?:btn|button)(?:--|-)primary$/;
 
 function fontStack(value: string): { family: string; fallback: string } | undefined {
   const parts = value.split(",").map((p) => p.trim()).filter(Boolean);
@@ -129,22 +130,37 @@ export function extractBrand(root: string, name: string): { brand: BrandInput; r
     set("bg", colorOf(rule, "background"), "body background", true);
     set("fg", colorOf(rule, "color"), "body color", true);
   }
-  for (const rule of rules.filter((r) => selectors(r).some((s) => BASE_BUTTON.test(s)))) {
-    set("primary", colorOf(rule, "background"), `${rule.selector} background`, true);
-    set("onPrimary", colorOf(rule, "color"), `${rule.selector} color`, true);
-  }
   // A variant often only overrides custom properties (--bg) and inherits the
   // base button's `background: var(--bg)`, so evaluate that with its variables.
-  const baseButton = rules.find((r) => selectors(r).some((s) => BASE_BUTTON.test(s)) && (r.decls.background || r.decls["background-color"]));
+  const baseButtons = rules.filter((r) => selectors(r).some((s) => BASE_BUTTON.test(s)));
+  const baseButton = baseButtons.find((r) => r.decls.background || r.decls["background-color"]);
   const baseBackground = baseButton && (baseButton.decls["background-color"] ?? baseButton.decls.background);
-  for (const rule of rules.filter((r) => selectors(r).some((s) => BUTTON_VARIANT.test(s)))) {
-    const raw = rule.decls["background-color"] ?? rule.decls.background ?? baseBackground;
-    if (!raw) continue;
+  const baseColor = baseButtons.find((r) => r.decls.color)?.decls.color;
+  const variantColor = (rule: CssRule, prop: "color" | "background") => {
+    const raw = prop === "color" ? rule.decls.color ?? baseColor : rule.decls["background-color"] ?? rule.decls.background ?? baseBackground;
+    if (!raw) return undefined;
     const scoped = new Map(vars);
     for (const r of [baseButton, rule]) {
       for (const [k, v] of Object.entries(r?.decls ?? {})) if (k.startsWith("--")) scoped.set(k, v);
     }
-    const bg = toHex(resolveValue(raw, scoped));
+    return toHex(resolveValue(raw, scoped));
+  };
+  const variants = rules.filter((r) => selectors(r).some((s) => BUTTON_VARIANT.test(s)));
+
+  // A variant named primary is the primary button, even when the base button
+  // has a background of its own (Roses: a bare .btn plus .btn--primary).
+  for (const rule of variants.filter((r) => selectors(r).some((s) => PRIMARY_VARIANT.test(s)))) {
+    const bg = variantColor(rule, "background");
+    if (!bg || roles.primary) continue;
+    set("primary", bg, `${rule.selector} background`, true);
+    set("onPrimary", variantColor(rule, "color"), `${rule.selector} color`, true);
+  }
+  for (const rule of baseButtons) {
+    set("primary", colorOf(rule, "background"), `${rule.selector} background`, true);
+    set("onPrimary", colorOf(rule, "color"), `${rule.selector} color`, true);
+  }
+  for (const rule of variants) {
+    const bg = variantColor(rule, "background");
     if (bg && bg !== roles.primary?.value) set("accent", bg, `${rule.selector} background`, true);
   }
 

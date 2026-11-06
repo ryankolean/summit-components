@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04 GSAP ScrollTrigger</title>
+<link rel="stylesheet" href="../shared/motion.css">
+<style>
+  .stats { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); padding-block: 40px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; }
+  .stat b { display: block; font: 700 clamp(2.2rem, 5vw, 3.2rem)/1 var(--font-display); font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--muted); font-size: 14px; }
+
+  .pin { height: 100vh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+  .pin h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 28px; }
+  .track { display: flex; gap: 20px; width: max-content; }
+  .panel {
+    width: min(70vw, 520px); aspect-ratio: 16 / 10; border-radius: 18px; padding: 28px;
+    display: flex; flex-direction: column; justify-content: space-between; color: #fff;
+  }
+  .panel h3 { font-size: 2rem; }
+  .panel:nth-child(1) { background: #1e293b; }
+  .panel:nth-child(2) { background: #2f4bff; }
+  .panel:nth-child(3) { background: #c2410c; }
+  .panel:nth-child(4) { background: #0f766e; }
+  .panel:nth-child(5) { background: #6d28d9; }
+  @media (max-width: 700px) {
+    .pin { height: auto; padding-block: 40px; }
+    .track { flex-direction: column; width: auto; }
+    .panel { width: 100%; }
+  }
+  .outro { height: 60vh; display: grid; place-items: center; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar"><a href="../index.html">&larr; Motion Library</a><span class="tag">GSAP &middot; ScrollTrigger</span></header>
+  <section class="intro">
+    <h1>Pinned horizontal story + counters</h1>
+    <p>Numbers count up when they enter view. Further down, a section pins and its panels scrub sideways with the scroll. On phones the panels simply stack.</p>
+  </section>
+  <section class="stats">
+    <div class="stat"><b data-count="48">48</b><span>sites shipped</span></div>
+    <div class="stat"><b data-count="12">12</b><span>active retainers</span></div>
+    <div class="stat"><b data-count="99">99</b><span>Lighthouse average</span></div>
+    <div class="stat"><b data-count="7">7</b><span>day turnaround</span></div>
+  </section>
+</div>
+<section class="pin">
+  <div class="wrap"><h2>How a Summit project runs</h2></div>
+  <div class="track wrap">
+    <article class="panel"><span class="mono">Week 1</span><h3>Discovery</h3></article>
+    <article class="panel"><span class="mono">Week 2</span><h3>Design</h3></article>
+    <article class="panel"><span class="mono">Weeks 3&ndash;4</span><h3>Build</h3></article>
+    <article class="panel"><span class="mono">Week 5</span><h3>Launch</h3></article>
+    <article class="panel"><span class="mono">Ongoing</span><h3>Grow</h3></article>
+  </div>
+</section>
+<div class="wrap">
+  <div class="outro">End of pinned section</div>
+  <div class="how"><strong>Pattern:</strong> <code>scrub: 1</code> for smoothed scroll-linking, <code>end</code> as a function plus <code>invalidateOnRefresh</code> so resizing recalculates. In React, wrap this in <code>useGSAP()</code> so triggers are cleaned up on unmount.</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+  const mm = gsap.matchMedia();
+
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    gsap.utils.toArray('[data-count]').forEach((el) => {
+      gsap.from(el, {
+        textContent: 0, duration: 1.4, ease: 'power2.out', snap: { textContent: 1 },
+        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+      });
+    });
+  });
+
+  mm.add('(prefers-reduced-motion: no-preference) and (min-width: 701px)', () => {
+    const track = document.querySelector('.track');
+    const distance = () => track.scrollWidth - window.innerWidth;
+    gsap.to(track, {
+      x: () => -distance(),
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.pin', pin: true, scrub: 1,
+        end: () => '+=' + distance(),
+        invalidateOnRefresh: true
+      }
+    });
+  });
+</script>
+</body>
+</html>

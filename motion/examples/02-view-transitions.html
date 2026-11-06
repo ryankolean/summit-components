@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 View Transitions</title>
+<link rel="stylesheet" href="../shared/motion.css">
+<style>
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); padding-block: 8px 48px; }
+  .tile {
+    aspect-ratio: 4 / 5; border-radius: 16px; border: 0; cursor: pointer; padding: 18px;
+    display: flex; align-items: flex-end; color: #fff; font: 600 1.1rem var(--font-display); text-align: left;
+    transition: transform var(--dur-quick) var(--ease-out);
+  }
+  .tile:hover { transform: translateY(-4px); }
+  .detail { padding-block: 8px 48px; display: grid; gap: 24px; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
+  .detail-hero { aspect-ratio: 4 / 5; border-radius: 22px; }
+  .detail h2 { font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 12px; }
+  .detail p { color: var(--muted); }
+  @media (max-width: 700px) { .detail { grid-template-columns: 1fr; } }
+
+  /* Tune the shared-element morph */
+  ::view-transition-group(hero) { animation-duration: 480ms; animation-timing-function: var(--ease-out); }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 260ms; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar"><a href="../index.html">&larr; Motion Library</a><span class="tag">View Transitions API</span></header>
+  <section class="intro">
+    <h1>Shared-element transitions</h1>
+    <p>Click a tile. The card morphs into the detail view using <code>document.startViewTransition()</code>. Browsers without support swap instantly, so nothing breaks.</p>
+  </section>
+
+  <section class="grid" id="grid">
+    <button class="tile" style="background:#c2410c" data-name="Brown Butter" data-color="#c2410c">Brown Butter</button>
+    <button class="tile" style="background:#7c3aed" data-name="Ube Crinkle" data-color="#7c3aed">Ube Crinkle</button>
+    <button class="tile" style="background:#0f766e" data-name="Matcha White" data-color="#0f766e">Matcha White</button>
+    <button class="tile" style="background:#b91c1c" data-name="Red Velvet" data-color="#b91c1c">Red Velvet</button>
+    <button class="tile" style="background:#a16207" data-name="Salted Caramel" data-color="#a16207">Salted Caramel</button>
+    <button class="tile" style="background:#1d4ed8" data-name="Blueberry Lemon" data-color="#1d4ed8">Blueberry Lemon</button>
+  </section>
+
+  <section class="detail" id="detail" hidden>
+    <div class="detail-hero"></div>
+    <div>
+      <h2>Flavor</h2>
+      <p>Same-document view transitions work for SPAs. For multi-page sites add <code>@view-transition { navigation: auto; }</code> to both pages and give matching elements the same <code>view-transition-name</code>.</p>
+      <button class="btn ghost" id="back">&larr; Back to all</button>
+    </div>
+  </section>
+
+  <div class="how"><strong>Ask Claude:</strong> "Use the view-transition pattern from summit-components/motion/examples/02 for the product grid to product page navigation."</div>
+</div>
+<script>
+  const grid = document.getElementById('grid');
+  const detail = document.getElementById('detail');
+  const hero = detail.querySelector('.detail-hero');
+  const title = detail.querySelector('h2');
+  let current = null;
+
+  function transition(update) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || reduce) { update(); return null; }
+    return document.startViewTransition(update);
+  }
+
+  grid.addEventListener('click', (e) => {
+    const tile = e.target.closest('.tile');
+    if (!tile) return;
+    current = tile;
+    tile.style.viewTransitionName = 'hero';
+    transition(() => {
+      tile.style.viewTransitionName = '';
+      hero.style.background = tile.dataset.color;
+      hero.style.viewTransitionName = 'hero';
+      title.textContent = tile.dataset.name;
+      grid.hidden = true;
+      detail.hidden = false;
+    });
+  });
+
+  document.getElementById('back').addEventListener('click', () => {
+    const vt = transition(() => {
+      hero.style.viewTransitionName = '';
+      if (current) current.style.viewTransitionName = 'hero';
+      detail.hidden = true;
+      grid.hidden = false;
+    });
+    const clear = () => { if (current) current.style.viewTransitionName = ''; };
+    vt ? vt.finished.then(clear) : clear();
+  });
+</script>
+</body>
+</html>

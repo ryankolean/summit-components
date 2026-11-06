@@ -42,6 +42,15 @@ describe("checkContrast", () => {
     expect(errors.map((e) => e.pair)).toContain("fg on bg");
   });
 
+  it("checks link text against bg when the brand sets a link role", () => {
+    // Roses: an ember fill that cannot be read as text on paper, crimson links.
+    const fill = { ...brand, colors: { ...brand.colors, bg: "#F0ECE6", primary: "#F97743", onPrimary: "#2D332D" } };
+    const errors = (b: typeof brand) => checkContrast(b).filter((i) => i.level === "error").map((i) => i.pair);
+    expect(errors(fill)).toEqual(["primary on bg"]);
+    expect(errors({ ...fill, colors: { ...fill.colors, link: "#9C1B22" } })).toEqual([]);
+    expect(errors({ ...fill, colors: { ...fill.colors, link: "#B3CDB4" } })).toEqual(["link on bg"]);
+  });
+
   it("warns, not errors, when the accent cannot be used as text", () => {
     const pale = { ...brand, colors: { ...brand.colors, accent: "#FDD757" } };
     const issues = checkContrast(pale).filter((i) => i.pair === "accent on bg");
@@ -57,6 +66,12 @@ describe("toCssVariables", () => {
     expect(css).toContain("--summit-color-bg: #F5F2EF;");
     expect(css).toContain("--summit-color-on-primary: #FFFFFF;");
     expect(css).toContain("--summit-color-brand-sage: #A9B8A4;");
+  });
+
+  it("emits the link role only when the brand sets it", () => {
+    expect(css).not.toContain("--summit-color-link");
+    const linked = BrandSchema.parse({ ...brand, colors: { ...brand.colors, link: "#701318" } });
+    expect(toCssVariables(linked)).toContain("--summit-color-link: #701318;");
   });
 
   it("quotes font families and appends the fallback", () => {

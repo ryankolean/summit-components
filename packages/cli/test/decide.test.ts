@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -97,6 +97,31 @@ describe("detectStack and detectHost", () => {
     writeFileSync(join(site, "CNAME"), "example.com\n");
     expect(detectHost(site)).toBe("github-pages");
     expect(detectHost(tmp())).toBeUndefined();
+  });
+
+  it("recognizes GitHub Pages with no CNAME, from a Pages deploy workflow or .nojekyll (Roses regression)", () => {
+    const workflow = tmp();
+    mkdirSync(join(workflow, ".github/workflows"), { recursive: true });
+    writeFileSync(join(workflow, ".github/workflows/ci.yml"), "jobs:\n  ci:\n    steps:\n      - uses: actions/checkout@v4\n");
+    expect(detectHost(workflow)).toBeUndefined();
+    writeFileSync(
+      join(workflow, ".github/workflows/pages.yml"),
+      "jobs:\n  deploy:\n    steps:\n      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1\n      - id: deployment\n        uses: actions/deploy-pages@v4\n",
+    );
+    expect(detectHost(workflow)).toBe("github-pages");
+
+    const nojekyll = tmp();
+    writeFileSync(join(nojekyll, ".nojekyll"), "");
+    expect(detectHost(nojekyll)).toBe("github-pages");
+  });
+
+  it("drafts an existing GitHub Pages site onto github-pages instead of the new-site default", () => {
+    const site = tmp();
+    cpSync(fixture, site, { recursive: true });
+    mkdirSync(join(site, ".github/workflows"), { recursive: true });
+    writeFileSync(join(site, ".github/workflows/pages.yml"), "jobs:\n  deploy:\n    steps:\n      - uses: actions/deploy-pages@v4\n");
+    const draft = SiteConfigSchema.parse(initSiteConfig({ repo: intake, client: "shellfish-bar", registry, existing: site }));
+    expect(draft.host.name).toBe("github-pages");
   });
 });
 

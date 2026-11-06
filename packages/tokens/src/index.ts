@@ -35,16 +35,18 @@ export interface ContrastIssue {
 
 /**
  * Checks the pairs components actually render. Every text role must meet WCAG
- * AA (4.5:1), including primary, which outline buttons and links use as text.
+ * AA (4.5:1), including the link text on bg: link when the brand sets it,
+ * otherwise primary, which outline buttons and links then use as text.
  * The accent only warns, because many brands use it as a ground and never as text.
  */
 export function checkContrast(brand: Brand): ContrastIssue[] {
   const c = brand.colors;
+  const [linkPair, link]: [string, string] = c.link ? ["link on bg", c.link] : ["primary on bg", c.primary];
   const rules: Array<[string, string, string, number, ContrastIssue["level"], string]> = [
     ["fg on bg", c.fg, c.bg, 4.5, "error", "body text"],
     ["muted on bg", c.muted, c.bg, 4.5, "error", "secondary text"],
     ["onPrimary on primary", c.onPrimary, c.primary, 4.5, "error", "button labels"],
-    ["primary on bg", c.primary, c.bg, 4.5, "error", "links and outline button labels"],
+    [linkPair, link, c.bg, 4.5, "error", "links and outline button labels"],
     ["accent on bg", c.accent, c.bg, 3, "warn", "use the accent as a ground, not as text"],
   ];
   const issues: ContrastIssue[] = [];

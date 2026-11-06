@@ -1,7 +1,7 @@
 // Bundles the summit command into one dependency-free file. Client CI installs
-// it with `npm install --global github:...#cli-vX`, and npm cannot install a
-// global package whose own dependencies are git dependencies, so the CLI ships
-// with everything inlined and no dependencies at all.
+// it globally from the codeload tarball of the cli-vX commit, and npm cannot
+// install a global package whose own dependencies are git dependencies, so the
+// CLI ships with everything inlined and no dependencies at all.
 import { copyFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { build } from "esbuild";

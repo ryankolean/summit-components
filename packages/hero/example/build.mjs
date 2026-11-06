@@ -17,7 +17,19 @@ const prerendered = {
   lede: "Scratch cooking, strong coffee and a menu that changes with what is good this week.",
   primaryCta: { label: "See the menu", href: "#menu" },
   secondaryCta: { label: "Get directions", href: "#visit" },
-  image: { src: "media.svg", alt: "Illustrated sun over rolling hills", width: 1200, height: 900 },
+  image: { src: "media.svg", alt: "Illustrated sun over rolling hills", width: 1200, height: 900, fetchpriority: "high" },
+};
+
+const stacked = {
+  id: "hours",
+  headingLevel: 2,
+  layout: "stacked",
+  eyebrow: "Stacked layout, tuned with hero tokens",
+  title: "Open every day from seven",
+  lede: "Text over image at every width. Pill buttons, a square-cornered image and a filled button in a different colour from the outline one, each set with a hero token on the element.",
+  primaryCta: { label: "Book a table", href: "#book" },
+  secondaryCta: { label: "Call us", href: "tel:+15555550100" },
+  image: { src: "media.svg", alt: "The same illustration, full width", width: 1200, height: 900 },
 };
 
 const fromConfig = {
@@ -48,11 +60,23 @@ const page = `<!doctype html>
   body { margin: 0; background: var(--summit-color-bg); }
   .note { max-width: 40rem; margin: 0 auto; padding: 1rem clamp(1rem, 5vw, 4rem); font: 0.875rem/1.5 var(--summit-font-body); color: var(--summit-color-muted); }
   hr { border: 0; border-top: 1px solid color-mix(in srgb, var(--summit-color-fg) 15%, transparent); margin: 0; }
+  .tuned {
+    --summit-hero-max-width: 56rem;
+    --summit-hero-cta-radius: 999px;
+    --summit-hero-media-radius: 2px;
+    --summit-hero-cta-primary-bg: var(--summit-color-accent);
+    --summit-hero-cta-primary-fg: var(--summit-color-fg);
+    --summit-hero-cta-secondary-fg: var(--summit-color-fg);
+    --summit-hero-cta-secondary-hover-bg: var(--summit-color-fg);
+    --summit-hero-cta-secondary-hover-fg: var(--summit-color-bg);
+  }
 </style>
 </head>
 <body>
 <summit-hero>${renderHero(prerendered)}</summit-hero>
 <p class="note">Above: <code>renderHero()</code> output pasted into the page. The content is in the HTML, so crawlers and answer engines read it with no JavaScript.</p>
+<hr>
+<summit-hero class="tuned">${renderHero(stacked)}</summit-hero>
 <hr>
 <summit-hero data-config='${attr(JSON.stringify(fromConfig))}'></summit-hero>
 <script type="module" src="../dist/embed.js"></script>

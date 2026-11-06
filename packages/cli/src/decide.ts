@@ -89,8 +89,18 @@ export function detectHost(dir: string): Host | undefined {
   if (existsSync(join(dir, "vercel.json"))) return "vercel";
   if (existsSync(join(dir, "netlify.toml"))) return "netlify";
   if (existsSync(join(dir, "wrangler.toml"))) return "cloudflare-pages";
-  if (existsSync(join(dir, "CNAME")) || existsSync(join(dir, "public", "CNAME"))) return "github-pages";
+  const pagesFile = (name: string) => existsSync(join(dir, name)) || existsSync(join(dir, "public", name));
+  if (pagesFile("CNAME") || pagesFile(".nojekyll") || deploysToPages(dir)) return "github-pages";
   return undefined;
+}
+
+/** A workflow that publishes with the official Pages actions (Roses has no CNAME). */
+function deploysToPages(dir: string): boolean {
+  const workflows = join(dir, ".github", "workflows");
+  if (!existsSync(workflows)) return false;
+  return readdirSync(workflows)
+    .filter((f) => /\.ya?ml$/.test(f))
+    .some((f) => /\buses:\s*["']?actions\/(?:deploy-pages|upload-pages-artifact)@/.test(readFileSync(join(workflows, f), "utf8")));
 }
 
 export interface InitOptions {

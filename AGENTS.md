@@ -28,6 +28,8 @@ Instructions for any agent working in this repo. Read README.md first.
   site repo.
 - **Checks read built HTML, never source.** A check that needs to know the
   stack is in the wrong place.
+- **Motion follows `motion/AGENTS.md`**, in this repo and in every site built
+  with it. New patterns go back into `motion/examples/` as `09+`.
 
 ## Verify before opening a PR
 

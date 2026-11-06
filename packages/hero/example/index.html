@@ -14,11 +14,23 @@
   body { margin: 0; background: var(--summit-color-bg); }
   .note { max-width: 40rem; margin: 0 auto; padding: 1rem clamp(1rem, 5vw, 4rem); font: 0.875rem/1.5 var(--summit-font-body); color: var(--summit-color-muted); }
   hr { border: 0; border-top: 1px solid color-mix(in srgb, var(--summit-color-fg) 15%, transparent); margin: 0; }
+  .tuned {
+    --summit-hero-max-width: 56rem;
+    --summit-hero-cta-radius: 999px;
+    --summit-hero-media-radius: 2px;
+    --summit-hero-cta-primary-bg: var(--summit-color-accent);
+    --summit-hero-cta-primary-fg: var(--summit-color-fg);
+    --summit-hero-cta-secondary-fg: var(--summit-color-fg);
+    --summit-hero-cta-secondary-hover-bg: var(--summit-color-fg);
+    --summit-hero-cta-secondary-hover-fg: var(--summit-color-bg);
+  }
 </style>
 </head>
 <body>
-<summit-hero><section class="summit-hero summit-hero--start summit-hero--with-media" aria-labelledby="hero-title"><div class="summit-hero__body"><p class="summit-hero__eyebrow">Ferndale, Michigan</p><h1 id="hero-title" class="summit-hero__title">Breakfast worth getting up for</h1><p class="summit-hero__lede">Scratch cooking, strong coffee and a menu that changes with what is good this week.</p><div class="summit-hero__actions"><a class="summit-hero__cta summit-hero__cta--primary" href="#menu">See the menu</a><a class="summit-hero__cta summit-hero__cta--secondary" href="#visit">Get directions</a></div></div><img class="summit-hero__media" src="media.svg" alt="Illustrated sun over rolling hills" width="1200" height="900" decoding="async"/></section></summit-hero>
+<summit-hero><section class="summit-hero summit-hero--start summit-hero--with-media" aria-labelledby="hero-title"><div class="summit-hero__body"><p class="summit-hero__eyebrow">Ferndale, Michigan</p><h1 id="hero-title" class="summit-hero__title">Breakfast worth getting up for</h1><p class="summit-hero__lede">Scratch cooking, strong coffee and a menu that changes with what is good this week.</p><div class="summit-hero__actions"><a class="summit-hero__cta summit-hero__cta--primary" href="#menu">See the menu</a><a class="summit-hero__cta summit-hero__cta--secondary" href="#visit">Get directions</a></div></div><img class="summit-hero__media" src="media.svg" alt="Illustrated sun over rolling hills" width="1200" height="900" decoding="async" fetchPriority="high"/></section></summit-hero>
 <p class="note">Above: <code>renderHero()</code> output pasted into the page. The content is in the HTML, so crawlers and answer engines read it with no JavaScript.</p>
+<hr>
+<summit-hero class="tuned"><section class="summit-hero summit-hero--start summit-hero--with-media summit-hero--stacked" aria-labelledby="hours-title"><div class="summit-hero__body"><p class="summit-hero__eyebrow">Stacked layout, tuned with hero tokens</p><h2 id="hours-title" class="summit-hero__title">Open every day from seven</h2><p class="summit-hero__lede">Text over image at every width. Pill buttons, a square-cornered image and a filled button in a different colour from the outline one, each set with a hero token on the element.</p><div class="summit-hero__actions"><a class="summit-hero__cta summit-hero__cta--primary" href="#book">Book a table</a><a class="summit-hero__cta summit-hero__cta--secondary" href="tel:+15555550100">Call us</a></div></div><img class="summit-hero__media" src="media.svg" alt="The same illustration, full width" width="1200" height="900" decoding="async"/></section></summit-hero>
 <hr>
 <summit-hero data-config='{"id":"catering","headingLevel":2,"align":"center","eyebrow":"Rendered by the custom element","title":"Catering for fifty or five hundred","lede":"This hero has no markup in the page. <summit-hero> builds it from data-config, the fallback for pages that cannot hold pasted HTML.","primaryCta":{"label":"Start an inquiry","href":"mailto:hello@example.com"}}'></summit-hero>
 <script type="module" src="../dist/embed.js"></script>

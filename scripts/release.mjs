@@ -1,20 +1,26 @@
 // Releases each workspace package whose current version has no tag yet.
 //
 // A package is packed (pnpm pack turns workspace: ranges into versions), its
-// @summit/* dependencies are pointed at their own release tags, and the packed
-// files are committed as a standalone root commit tagged "<name>-v<version>".
-// Sites install with "github:ryankolean/summit-components#hero-v0.1.0": the
-// package sits at the root of that commit, built, so npm and pnpm install it
-// with no build step and no subdirectory support.
+// @summit/* dependencies are pointed at the commits of their own release tags,
+// and the packed files are committed as a standalone root commit tagged
+// "<name>-v<version>". Packages release in dependency order, so a dependency
+// released in the same run is tagged before anything points at it.
 //
-// usage: node scripts/release.mjs [--push] [--repo <spec>]
+// Sites install a release from its commit's tarball, over HTTPS:
+// "https://codeload.github.com/ryankolean/summit-components/tar.gz/<commit>".
+// The package sits at the root of that commit, built, so npm and pnpm install
+// it with no build step and no subdirectory support. A github: spec fetches
+// the same commit over SSH, which fails on CI runners with no key, and npm
+// records no integrity hash for it.
+//
+// usage: node scripts/release.mjs [--push] [--repo <owner/name>]
 // Runs after `pnpm build`. Without --push, tags are created locally only.
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { flag, installSpec, repoSpec, root, tagFor, workspacePackages } from "./lib/tags.mjs";
+import { dependencyFields, flag, installSpec, releasedCommit, releaseOrder, repoSpec, root, tagFor, workspacePackages } from "./lib/tags.mjs";
 
 const args = process.argv.slice(2);
 const push = args.includes("--push");
@@ -33,7 +39,8 @@ const exists = (tag) =>
   git(["tag", "--list", tag]) === tag || remoteTags.includes(`refs/tags/${tag}`);
 
 let released = 0;
-for (const [name, pkg] of packages) {
+for (const name of releaseOrder(packages)) {
+  const pkg = packages.get(name);
   const tag = tagFor(name, pkg.version);
   if (exists(tag)) {
     console.log(`${tag}: exists, skipping`);
@@ -55,10 +62,10 @@ for (const [name, pkg] of packages) {
     // field means anything in a release, so drop both.
     delete manifest.scripts;
     delete manifest.devDependencies;
-    for (const field of ["dependencies", "peerDependencies", "optionalDependencies"]) {
+    for (const field of dependencyFields) {
       for (const dep of Object.keys(manifest[field] ?? {})) {
         const target = packages.get(dep);
-        if (target) manifest[field][dep] = installSpec(repo, dep, target.version);
+        if (target) manifest[field][dep] = installSpec(repo, releasedCommit(repo, tagFor(dep, target.version)));
       }
     }
     writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);

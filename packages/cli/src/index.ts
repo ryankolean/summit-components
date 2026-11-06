@@ -13,7 +13,7 @@ export {
 } from "./decide.js";
 export { extractBrand, extractEntity, htmlPages, parseCss, resolveValue } from "./extract.js";
 export { PRIVATE_MARKER, runIntake, type IntakeOptions, type IntakeResult } from "./intake.js";
-export { executeNew, planNew, type NewOptions, type NewPlan, type Step } from "./new.js";
+export { executeNew, planNew, resolveCliCommit, tagCommit, type NewOptions, type NewPlan, type Step } from "./new.js";
 export { derivedContractValues, fillContract, mergeContractValues, type FilledContract } from "./contract.js";
 export { buildEstimate, formatAmount, type Estimate, type EstimateLine } from "./estimate.js";
 export { markdownToHtml } from "./markdown.js";
