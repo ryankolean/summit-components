@@ -7,7 +7,9 @@ import { BrandSchema } from "@summit/schemas";
 import { designDoc, implementationDoc, initSiteConfig, validateSiteConfig } from "./decide.js";
 import { loadRegistry } from "./registry.js";
 import { runIntake } from "./intake.js";
+import { formatAmount } from "./estimate.js";
 import { executeNew, planNew } from "./new.js";
+import { buildProposal, checkShareLinks, deployProposals, stageProposals } from "./proposal.js";
 import { renderPreview } from "./preview.js";
 import { verifySplit } from "./split.js";
 
@@ -29,7 +31,15 @@ const USAGE = `usage: summit <command> [options]
   decide validate <site.config.json> [--registry <file>]
       Validate against the schema, the registry and the hosting rules.
   decide docs <site.config.json> --out <dir> [--brand <brand.json>]
-      Write design-doc.md and implementation-doc.md.`;
+      Write design-doc.md and implementation-doc.md.
+  proposal build <client-dir> --rates <rate-card.json> [--config <file>] [--entity <file>]
+                 [--engagement <file>] [--contract <template.md>] [--out <dir>] [--draft] [--no-pdf]
+      Estimate, contract and proposal page from site.config.json. Inputs default to
+      <client-dir>/decisions/site.config.json, site/entity.json and engagement.json;
+      output to <client-dir>/out/, which ignores itself in git.
+  proposal publish <intake-root> [--project <name>] [--dry-run]
+      Deploy every <client>/out/proposal to Cloudflare Pages at its unlisted slug,
+      then check each share link.`;
 
 const [command, ...rest] = process.argv.slice(2);
 
@@ -87,8 +97,91 @@ function decide(argv: string[]): number {
   return -1;
 }
 
-function run(): number {
+async function proposal(argv: string[]): Promise<number> {
+  const [sub, target, ...more] = argv;
+  const { values } = parseArgs({
+    args: more,
+    options: {
+      rates: { type: "string" },
+      config: { type: "string" },
+      entity: { type: "string" },
+      engagement: { type: "string" },
+      contract: { type: "string" },
+      out: { type: "string" },
+      registry: { type: "string" },
+      project: { type: "string" },
+      draft: { type: "boolean" },
+      "no-pdf": { type: "boolean" },
+      "dry-run": { type: "boolean" },
+    },
+  });
+  if (!target) return -1;
+
+  if (sub === "build") {
+    if (!values.rates) return -1;
+    const result = buildProposal({
+      config: values.config ?? join(target, "decisions/site.config.json"),
+      entity: values.entity ?? join(target, "site/entity.json"),
+      engagement: values.engagement ?? join(target, "engagement.json"),
+      rates: values.rates,
+      out: values.out ?? join(target, "out"),
+      registry: loadRegistry(values.registry),
+      ...(values.contract ? { contract: values.contract } : {}),
+      draft: Boolean(values.draft),
+      pdf: !values["no-pdf"],
+    });
+    for (const f of result.findings) console.error(`${f.severity}: ${f.path || "(root)"}: ${f.message}`);
+    const e = result.estimate;
+    console.log(`estimate: ${formatAmount(e.hours)} hours, $${formatAmount(e.total)}${e.maintenance ? ` + $${formatAmount(e.maintenance.monthlyFee)}/month (${e.maintenance.tier})` : ""}${e.example ? " [example rates]" : ""}`);
+    const contract = {
+      written: "contract: ready to sign",
+      example: "contract: example rates, not for signature",
+      draft: `contract: DRAFT with ${result.unresolved.length} unfilled value(s) and ${result.decisions.length} open decision(s)`,
+      blocked: "contract: not rendered, open items remain (see below, or pass --draft)",
+      "no-tier": "contract: none, the engagement has no maintenance tier",
+      "no-template": "contract: none, no template (set contractTemplate in the rate card or pass --contract)",
+    }[result.contract];
+    console.log(contract);
+    if (result.contract === "blocked" || result.contract === "draft") {
+      for (const p of result.unresolved) console.log(`  unfilled ${p}`);
+      for (const d of result.decisions) console.log(`  line ${d.line}: ${d.text.slice(0, 100)}`);
+    }
+    console.log(`pdf: ${{ written: "written", "no-chrome": "skipped, no Chrome found (set SUMMIT_CHROME)", failed: "Chrome failed to print", skipped: "skipped" }[result.pdf]}`);
+    console.log(`proposal: ${result.links.proposal} (live after summit proposal publish)`);
+    for (const f of result.files) console.log(`wrote ${f}`);
+    return result.contract === "blocked" || result.contract === "no-template" || result.pdf === "failed" ? 1 : 0;
+  }
+
+  if (sub === "publish") {
+    const staging = join(target, "_publish");
+    const staged = stageProposals(target, staging);
+    for (const s of staged) console.log(`staged ${s.client}: ${s.proposal}${s.example ? " [example rates]" : ""}`);
+    if (!staged.length) {
+      console.error(`no <client>/out/proposal/ under ${target}; run summit proposal build first`);
+      return 1;
+    }
+    if (values["dry-run"]) return 0;
+    deployProposals(staging, values.project ?? "summit-proposals");
+    let failed = 0;
+    for (const s of staged) {
+      for (const check of await checkShareLinks(s)) {
+        console.log(`${check.ok ? "ok  " : "FAIL"} ${check.url} ${check.detail}`);
+        if (!check.ok) failed++;
+      }
+    }
+    return failed ? 1 : 0;
+  }
+  return -1;
+}
+
+async function run(): Promise<number> {
   if (command === "check") return checks(rest);
+  if (command === "proposal") {
+    const code = await proposal(rest);
+    if (code >= 0) return code;
+    console.log(USAGE);
+    return 2;
+  }
   if (command === "decide") {
     const code = decide(rest);
     if (code >= 0) return code;
@@ -149,4 +242,4 @@ function run(): number {
   return 2;
 }
 
-process.exit(run());
+process.exit(await run());

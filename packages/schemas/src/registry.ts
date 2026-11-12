@@ -4,6 +4,10 @@ export const STACKS = ["astro", "next", "vite", "static-html", "nobuild-react"] 
 export const Stack = z.enum(STACKS);
 export type Stack = z.infer<typeof Stack>;
 
+export const EFFORT_SIZES = ["xs", "s", "m", "l", "xl"] as const;
+export const EffortSize = z.enum(EFFORT_SIZES);
+export type EffortSize = z.infer<typeof EffortSize>;
+
 /** Stacks that can run a build and import a package. */
 const FRAMEWORK_STACKS: readonly Stack[] = ["astro", "next", "vite"];
 
@@ -27,10 +31,16 @@ export const RegistryEntry = z
     /** Path to a runnable example, relative to the repo root. */
     example: z.string().optional(),
     dependsOn: z.array(z.string()).default([]),
-    /** Relative build effort, feeds the estimate generator (SUMMIT-247). */
-    effort: z.enum(["xs", "s", "m", "l", "xl"]).optional(),
+    /**
+     * Effort to place and configure one instance on a page. Required for
+     * components: the estimate prices it through the private rate card (SUMMIT-247).
+     */
+    effort: EffortSize.optional(),
   })
   .superRefine((entry, ctx) => {
+    if (entry.kind === "component" && !entry.effort) {
+      ctx.addIssue({ code: "custom", path: ["effort"], message: "components need an effort size (xs, s, m, l or xl) for the estimate" });
+    }
     const { react, html, embed } = entry.entrypoints;
     for (const stack of entry.stacks) {
       const framework = FRAMEWORK_STACKS.includes(stack);

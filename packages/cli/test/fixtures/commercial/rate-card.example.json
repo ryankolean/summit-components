@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "example": true,
+  "hourlyRate": 100,
+  "afterHoursRate": 150,
+  "effortHours": { "xs": 1, "s": 2, "m": 4, "l": 8, "xl": 16 },
+  "adoptFactor": 0.5,
+  "pageHours": 3,
+  "redirectHours": 0.25,
+  "baseline": [
+    { "label": "Discovery and content review", "hours": 4 },
+    { "label": "Launch QA and handover", "hours": 3 }
+  ],
+  "depositPercent": 50,
+  "tiers": [
+    { "name": "Example Basic", "monthlyFee": 50, "includedUpdateHours": 1 },
+    { "name": "Example Plus", "monthlyFee": 100, "includedUpdateHours": 2, "inclusions": ["Monthly analytics summary", "Quarterly content review"] }
+  ],
+  "contractDefaults": {
+    "STATE_OF_FORMATION": "Michigan",
+    "SUPPORT_EMAIL": "support@summit.example"
+  },
+  "contractTemplate": "contract-template.md"
+}

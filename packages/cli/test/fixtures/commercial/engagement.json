@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "client": "shellfish-bar",
+  "clientLegalName": "Shellfish Bar LLC",
+  "proposalSlug": "k3x9q2m7v8w4p1z6",
+  "preparedOn": "2026-10-05",
+  "tier": "Example Plus",
+  "links": { "preview": "https://ryankolean.github.io/summit-sandbox-client/" },
+  "contract": {
+    "CLIENT_ADDRESS": "1 Example Street, Traverse City, MI 49684",
+    "THIRD_PARTY_SERVICE": ["Reservations widget", "Newsletter"],
+    "THIRD_PARTY_PURPOSE": ["Table bookings", "Email list"]
+  }
+}

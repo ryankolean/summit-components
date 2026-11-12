@@ -43,8 +43,13 @@ Add an entry to `registry.json`:
 - `stacks`: every stack it supports. Framework stacks need a `react` or `html`
   entrypoint; `static-html` and `nobuild-react` need `html` or `embed`.
 - `entrypoints`: package specifiers that match the package's `exports`.
-- `configSchema`, `example`, `dependsOn`, and `effort` (feeds the estimate
-  generator in SUMMIT-247).
+- `effort` (required for components): `xs`, `s`, `m`, `l` or `xl`, the work to
+  place and configure one instance on a page. The private rate card turns a
+  size into hours, so the size is public and the price is not. Size it against
+  `hero` (`s`): a component with real behavior (a menu, a gallery with a
+  lightbox) is `m` or larger. Changing a size reprices every estimate that uses
+  the component. See [PROPOSALS.md](PROPOSALS.md).
+- `configSchema`, `example` and `dependsOn`.
 
 `pnpm registry:check` fails if the entry disagrees with the package.
 
