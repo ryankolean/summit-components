@@ -1,0 +1,19 @@
+{
+  "name": "@summit/seo",
+  "version": "0.1.3",
+  "description": "JSON-LD, llms.txt and robots.txt generated from entity.json, the single source of public facts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@summit/schemas": "https://codeload.github.com/ryankolean/summit-components/tar.gz/7e62f62f305f926c3f996dd6c53944b86802fb08"
+  }
+}
