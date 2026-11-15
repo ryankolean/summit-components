@@ -19,6 +19,7 @@ import {
   mergeContractValues,
   renderPreview,
   runIntake,
+  shareLinks,
   stageProposals,
 } from "../src/index.js";
 
@@ -197,7 +198,7 @@ describe("buildProposal", () => {
       client: "shellfish-bar",
       slug: "k3x9q2m7v8w4p1z6",
       example: true,
-      proposal: "https://summit-proposals.pages.dev/k3x9q2m7v8w4p1z6/",
+      proposal: "https://summit-proposals.example-account.workers.dev/k3x9q2m7v8w4p1z6/",
       preview: "https://ryankolean.github.io/summit-sandbox-client/",
       styleGuide: "https://ryankolean.github.io/summit-sandbox-client/style-guide/",
     });
@@ -260,6 +261,19 @@ describe("buildProposal", () => {
     const page = readFileSync(join(dir, "out/proposal/index.html"), "utf8");
     expect(page).not.toContain("<script>alert(1)</script>");
     expect(page).toContain("&lt;script&gt;");
+  });
+});
+
+describe("shareLinks", () => {
+  it("builds the proposal link on the account's workers.dev host, or on baseUrl when set", () => {
+    expect(shareLinks(rates, engagement).proposal).toBe("https://summit-proposals.example-account.workers.dev/k3x9q2m7v8w4p1z6/");
+    const custom = { ...rates, proposals: { project: "summit-proposals", baseUrl: "https://proposals.example.com/" } };
+    expect(shareLinks(custom, engagement).proposal).toBe("https://proposals.example.com/k3x9q2m7v8w4p1z6/");
+  });
+
+  it("refuses to guess a host when neither workersSubdomain nor baseUrl is set", () => {
+    const bare = { ...rates, proposals: { project: "summit-proposals" } };
+    expect(() => shareLinks(bare, engagement)).toThrow(/workersSubdomain/);
   });
 });
 

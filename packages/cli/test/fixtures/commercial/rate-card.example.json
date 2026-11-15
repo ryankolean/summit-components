@@ -20,5 +20,6 @@
     "STATE_OF_FORMATION": "Michigan",
     "SUPPORT_EMAIL": "support@summit.example"
   },
-  "contractTemplate": "contract-template.md"
+  "contractTemplate": "contract-template.md",
+  "proposals": { "workersSubdomain": "example-account" }
 }

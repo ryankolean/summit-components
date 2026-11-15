@@ -43,9 +43,13 @@ export const RateCardSchema = z
     contractDefaults: z.record(z.string(), z.string()).default({}),
     /** Maintenance agreement template (SUMMIT-196), relative to the rate card file. */
     contractTemplate: z.string().optional(),
-    /** Cloudflare Pages project that hosts proposals at unlisted URLs. */
+    /**
+     * Cloudflare Worker (static assets) that hosts proposals at unlisted URLs:
+     * https://<project>.<workersSubdomain>.workers.dev/<slug>/. baseUrl overrides
+     * the host, for a custom domain.
+     */
     proposals: z
-      .object({ project: Kebab.default("summit-proposals"), baseUrl: z.url().optional() })
+      .object({ project: Kebab.default("summit-proposals"), workersSubdomain: Kebab.optional(), baseUrl: z.url().optional() })
       .default({ project: "summit-proposals" }),
   })
   .superRefine((card, ctx) => {

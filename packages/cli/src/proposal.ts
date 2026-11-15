@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import {
@@ -33,7 +34,11 @@ const longDate = (iso: string) =>
 const addDays = (iso: string, days: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
 
 export function shareLinks(rates: RateCard, engagement: Engagement): ShareLinks {
-  const base = rates.proposals.baseUrl ?? `https://${rates.proposals.project}.pages.dev/`;
+  const { baseUrl, project, workersSubdomain } = rates.proposals;
+  if (!baseUrl && !workersSubdomain) {
+    throw new Error("rate card: set proposals.workersSubdomain (the account's workers.dev subdomain) or proposals.baseUrl");
+  }
+  const base = baseUrl ?? `https://${project}.${workersSubdomain}.workers.dev/`;
   const preview = engagement.links.preview;
   const styleGuide = engagement.links.styleGuide ?? (preview ? new URL("style-guide/", preview).href : undefined);
   return {
@@ -442,8 +447,8 @@ const HEADERS = `/*
 `;
 
 /**
- * Collects every <client>/out/ under the intake root into one site. A Pages
- * deploy replaces the whole site, so a proposal stays live only while its
+ * Collects every <client>/out/ under the intake root into one site. A Workers
+ * static assets deploy replaces the whole site, so a proposal stays live only while its
  * out/ directory exists; delete it and publish again to take a link down.
  */
 export function stageProposals(root: string, staging: string): ShareLinks[] {
@@ -494,8 +499,20 @@ export async function checkShareLinks(links: ShareLinks): Promise<LinkCheck[]> {
   );
 }
 
+/**
+ * Deploys the staged folder as an assets-only Worker named after the project.
+ * Workers static assets honor the staged _headers file, as Pages did. Wrangler
+ * runs from a scratch directory so its .wrangler/ working files never land in
+ * the staged site (they would be uploaded) or in the intake repo.
+ */
 export function deployProposals(staging: string, project: string): void {
-  execFileSync("npx", ["--yes", "wrangler@4", "pages", "deploy", staging, "--project-name", project, "--branch", "main", "--commit-dirty=true"], {
-    stdio: "inherit",
-  });
+  const cwd = mkdtempSync(join(tmpdir(), "summit-publish-"));
+  try {
+    execFileSync("npx", ["--yes", "wrangler@4", "deploy", "--name", project, "--assets", resolve(staging), "--compatibility-date", "2026-11-01"], {
+      cwd,
+      stdio: "inherit",
+    });
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
 }
