@@ -1,6 +1,6 @@
 {
   "name": "@summit/tokens",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Brand tokens as CSS custom properties and a Tailwind preset, with a WCAG contrast guard",
   "type": "module",
   "bin": {

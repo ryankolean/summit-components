@@ -1,5 +1,15 @@
 # @summit/seo
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [33dbfe8]
+- Updated dependencies [9e749ec]
+- Updated dependencies [06ebc9d]
+- Updated dependencies [dffa41e]
+  - @summit/schemas@0.3.0
+
 ## 0.1.2
 
 ### Patch Changes
