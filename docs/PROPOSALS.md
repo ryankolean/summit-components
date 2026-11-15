@@ -96,14 +96,14 @@ summit proposal publish ~/code/summit-intake
 ```
 
 Collects every `<client>/out/proposal/` under the intake root into one site and
-deploys it to the Cloudflare Pages project `summit-proposals` (override with
-`--project`) with `npx wrangler@4`. Each proposal lives at
-`https://summit-proposals.pages.dev/<proposalSlug>/`. The site sends
-`X-Robots-Tag: noindex`, `Referrer-Policy: no-referrer` and `Cache-Control:
-no-store` on every path, its robots.txt disallows everything, and the root page
-is blank, so a proposal is reachable only by its link. After deploying, every
-share link is fetched and must answer 200; the proposal must also carry the
-noindex header.
+deploys it as an assets-only Cloudflare Worker named `summit-proposals`
+(override with `--project`) with `npx wrangler@4 deploy`. Each proposal lives at
+`https://summit-proposals.<workersSubdomain>.workers.dev/<proposalSlug>/`. The
+site sends `X-Robots-Tag: noindex`, `Referrer-Policy: no-referrer` and
+`Cache-Control: no-store` on every path, its robots.txt disallows everything,
+and the root page is blank, so a proposal is reachable only by its link. After
+deploying, every share link is fetched and must answer 200; the proposal must
+also carry the noindex header.
 
 A deploy replaces the whole site. A proposal stays live only while its `out/`
 folder exists: delete the folder and publish again to take the link down.
@@ -111,13 +111,28 @@ Changing `proposalSlug` breaks the link the client has.
 
 `--dry-run` stages the site in `<intake-root>/_publish/` without deploying.
 
-One-time setup per Cloudflare account (the login is interactive OAuth, or set
-`CLOUDFLARE_API_TOKEN` from 1Password):
+One-time setup per Cloudflare account:
 
-```bash
-npx wrangler@4 login
-npx wrangler@4 pages project create summit-proposals --production-branch main
-```
+1. Log in (interactive OAuth, or set `CLOUDFLARE_API_TOKEN` from 1Password):
+
+   ```bash
+   npx wrangler@4 login
+   ```
+
+2. Put the account's workers.dev subdomain in the rate card, so share links
+   are built on the right host. It is the middle part of any Worker URL in the
+   account (`<worker>.<subdomain>.workers.dev`):
+
+   ```json
+   "proposals": { "workersSubdomain": "your-subdomain" }
+   ```
+
+   For a custom domain, set `proposals.baseUrl` instead.
+
+The first publish creates the Worker; there is no project to create by hand.
+Proposals used to be a Cloudflare Pages project. Wrangler 4.162 turned
+`pages project create` into a Workers deploy, so the publish now targets
+Workers static assets directly. The staged `_headers` file works the same way.
 
 ## Share links
 
